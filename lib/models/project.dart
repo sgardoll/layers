@@ -11,6 +11,7 @@ class Project with _$Project {
     required String id,
     required String name,
     required String sourceImagePath,
+    @Default('queued') String status,
     @Default([]) List<Layer> layers,
     required DateTime createdAt,
     DateTime? updatedAt,

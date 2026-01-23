@@ -199,8 +199,11 @@ class SupabaseProjectService {
       id: row['id'],
       name: row['source_image_path'].split('/').last,
       sourceImagePath: row['source_image_path'],
+      status: row['status'] ?? 'queued',
       createdAt: DateTime.parse(row['created_at']),
-      updatedAt: DateTime.parse(row['updated_at']),
+      updatedAt: row['updated_at'] != null
+          ? DateTime.parse(row['updated_at'])
+          : null,
     );
   }
 
