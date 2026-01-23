@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** The 3D layer viewer must feel magical — selecting and navigating layers should be delightful, fast, and unlike anything else.
-**Current focus:** Phase 2 — Backend & API
+**Current focus:** Phase 3 — Core Experience
 
 ## Current Position
 
-Phase: 2 of 5 (Backend & API) — COMPLETE
-Plan: 2 of 2 complete
-Status: Phase complete, ready to plan Phase 3
-Last activity: 2026-01-23 — Phase 2 complete
+Phase: 3 of 5 (Core Experience) — COMPLETE
+Plan: 3 of 3 complete
+Status: Phase complete, ready to plan Phase 4
+Last activity: 2026-01-23 — Phase 3 complete
 
-Progress: ████░░░░░░ 40%
+Progress: ██████░░░░ 60%
 
 ## Performance Metrics
 
@@ -29,9 +29,10 @@ Progress: ████░░░░░░ 40%
 |-------|-------|-------|----------|
 | 01-foundation | 2/2 | ~12 min | ~6 min |
 | 02-backend-api | 2/2 | ~15 min | ~7.5 min |
+| 03-core-experience | 3/3 | ~20 min | ~7 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01, 01-02, 02-01, 02-02
+- Last 5 plans: 01-02, 02-01, 02-02, 03-01, 03-02, 03-03
 - Trend: Stable
 
 ## Accumulated Context
@@ -51,6 +52,10 @@ Recent decisions affecting current work:
 - [Phase 02-01]: Dart Shelf backend with SQLite for job persistence
 - [Phase 02-01]: Async job queue pattern (submit → poll → complete)
 - [Phase 02-02]: JobNotifier state machine for inference lifecycle
+- [Phase 03-01]: "Fake 3D" with Matrix4 perspective transforms (setEntry(3,2,0.001))
+- [Phase 03-01]: CameraNotifier for orbit/pan/zoom state
+- [Phase 03-02]: LayerStateNotifier for selection, visibility, reordering
+- [Phase 03-03]: ViewMode enum with toggle (3D Space vs 2D Stack)
 
 ### Deferred Issues
 
@@ -66,7 +71,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23 22:56
-Stopped at: Phase 2 complete
+Last session: 2026-01-23 23:15
+Stopped at: Phase 3 complete
 Resume file: None
-Next: Plan Phase 3 (Core Experience - 3D viewer, layer management)
+Next: Plan Phase 4 (Export & Persistence - PNG/ZIP/.layers export, project save/load)
