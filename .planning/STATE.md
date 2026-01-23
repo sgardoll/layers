@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** The 3D layer viewer must feel magical — selecting and navigating layers should be delightful, fast, and unlike anything else.
-**Current focus:** Phase 3 — Core Experience
+**Current focus:** Phase 2.1 — Supabase + BuildShip Backend (INSERTED)
 
 ## Current Position
 
-Phase: 3 of 5 (Core Experience) — COMPLETE
-Plan: 3 of 3 complete
-Status: Phase complete, ready to plan Phase 4
-Last activity: 2026-01-23 — Phase 3 complete
+Phase: 2.1 (Supabase + BuildShip Backend) — INSERTED
+Plan: 0 of 3 complete
+Status: Urgent insertion - architecture pivot
+Last activity: 2026-01-23 — Phase 2.1 inserted
 
 Progress: ██████░░░░ 60%
 
@@ -64,6 +64,12 @@ None yet.
 ### Pending Todos
 
 None yet.
+
+### Roadmap Evolution
+
+- Phase 2.1 inserted after Phase 2: Supabase + BuildShip backend (URGENT)
+  - Reason: Architecture pivot from custom Dart Shelf REST API to Supabase (DB/storage/realtime) + BuildShip (serverless workflows triggered by DB events)
+  - Impact: Phase 2 backend code deprecated, replaced by Supabase tables + BuildShip workflows + Flutter Supabase client
 
 ### Blockers/Concerns
 

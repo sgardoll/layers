@@ -11,7 +11,8 @@ None
 ## Phases
 
 - [x] **Phase 1: Foundation** — Flutter project setup, architecture, navigation structure
-- [ ] **Phase 2: Backend & API** — Cloud GPU inference integration, job queue, API endpoints
+- [x] **Phase 2: Backend & API** — Cloud GPU inference integration, job queue, API endpoints
+- [ ] **Phase 2.1: Supabase + BuildShip** — Replace REST backend with Supabase triggers + BuildShip workflows (INSERTED)
 - [ ] **Phase 3: Core Experience** — 3D viewer, layer management, 2D stack view
 - [ ] **Phase 4: Export & Persistence** — PNG/ZIP/.layers export, project save/load
 - [ ] **Phase 5: Monetization & Launch** — Freemium gates, subscription, platform deployment
@@ -39,6 +40,24 @@ Plans:
 - [ ] 02-01: Backend service setup and API design
 - [ ] 02-02: Qwen model integration and job processing
 - [ ] 02-03: Flutter client API integration
+
+### Phase 2.1: Supabase + BuildShip Backend (INSERTED)
+**Goal**: Replace custom Dart backend with Supabase tables/triggers + BuildShip workflows
+**Depends on**: Phase 2 (replaces it)
+**Research**: Likely (new integration)
+**Research topics**: Supabase Flutter SDK, BuildShip Supabase triggers, qwen-image-layered in BuildShip
+**Plans**: TBD
+
+Plans:
+- [ ] 02.1-01: Supabase schema (projects, project_layers, exports tables)
+- [ ] 02.1-02: BuildShip workflows (layering job, cleanup, export builder)
+- [ ] 02.1-03: Flutter Supabase client integration (replace LayerService)
+
+**Architecture:**
+- `projects` table: INSERT triggers layering job in BuildShip
+- `project_layers` table: stores layer metadata (paths to Storage)
+- `exports` table: INSERT triggers export build in BuildShip
+- Flutter app: DB writes + realtime subscriptions (no REST API)
 
 ### Phase 3: Core Experience
 **Goal**: The signature 3D viewer and layer management that makes the app special
@@ -80,7 +99,8 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-01-23 |
-| 2. Backend & API | 0/3 | Not started | — |
+| 2. Backend & API | 2/2 | Complete | 2026-01-23 |
+| 2.1 Supabase + BuildShip | 0/3 | Not started | — |
 | 3. Core Experience | 0/3 | Not started | — |
 | 4. Export & Persistence | 0/3 | Not started | — |
 | 5. Monetization & Launch | 0/3 | Not started | — |
