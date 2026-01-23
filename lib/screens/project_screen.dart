@@ -6,7 +6,9 @@ import 'package:image_picker/image_picker.dart';
 
 import '../models/project.dart';
 import '../providers/project_provider.dart';
+import '../providers/entitlement_provider.dart';
 import 'layers_screen.dart';
+import 'paywall_screen.dart';
 
 class ProjectScreen extends ConsumerStatefulWidget {
   const ProjectScreen({super.key});
@@ -28,6 +30,18 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
   }
 
   Future<void> _pickAndCreateProject() async {
+    // Check if user can create more projects
+    final canCreate = ref.read(canCreateProjectProvider);
+
+    if (!canCreate) {
+      // Show paywall
+      final upgraded = await Navigator.of(
+        context,
+      ).push<bool>(MaterialPageRoute(builder: (_) => const PaywallScreen()));
+
+      if (upgraded != true) return; // User didn't upgrade
+    }
+
     final XFile? image = await _imagePicker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 2048,

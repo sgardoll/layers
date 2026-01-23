@@ -12,9 +12,9 @@ None
 
 - [x] **Phase 1: Foundation** — Flutter project setup, architecture, navigation structure
 - [x] **Phase 2: Backend & API** — Cloud GPU inference integration, job queue, API endpoints
-- [ ] **Phase 2.1: Supabase + BuildShip** — Replace REST backend with Supabase triggers + BuildShip workflows (INSERTED)
-- [ ] **Phase 3: Core Experience** — 3D viewer, layer management, 2D stack view
-- [ ] **Phase 4: Export & Persistence** — PNG/ZIP/.layers export, project save/load
+- [x] **Phase 2.1: Supabase + BuildShip** — Replace REST backend with Supabase triggers + BuildShip workflows (INSERTED)
+- [x] **Phase 3: Core Experience** — 3D viewer, layer management, 2D stack view
+- [x] **Phase 4: Export & Persistence** — PNG/ZIP/.layers export, project save/load
 - [ ] **Phase 5: Monetization & Launch** — Freemium gates, subscription, platform deployment
 
 ## Phase Details
@@ -100,7 +100,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-01-23 |
 | 2. Backend & API | 2/2 | Complete | 2026-01-23 |
-| 2.1 Supabase + BuildShip | 0/3 | Not started | — |
-| 3. Core Experience | 0/3 | Not started | — |
-| 4. Export & Persistence | 0/3 | Not started | — |
-| 5. Monetization & Launch | 0/3 | Not started | — |
+| 2.1 Supabase + BuildShip | 3/3 | Complete | 2026-01-23 |
+| 3. Core Experience | 3/3 | Complete | 2026-01-23 |
+| 4. Export & Persistence | 3/3 | Complete | 2026-01-24 |
+| 5. Monetization & Launch | 0/3 | In Progress | — |
