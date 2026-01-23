@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/layer.dart';
-import '../services/export_service.dart';
+import '../services/supabase_export_service.dart';
 
 class ExportBottomSheet extends ConsumerStatefulWidget {
   final List<Layer> layers;
@@ -43,83 +46,41 @@ class ExportBottomSheet extends ConsumerStatefulWidget {
 class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
   bool _isExporting = false;
   String? _statusMessage;
+  ExportJob? _currentExport;
+  StreamSubscription<ExportJob>? _exportSubscription;
 
-  Future<void> _exportSinglePng() async {
-    if (widget.selectedLayer == null) {
-      _showSnackBar('Select a layer first');
-      return;
+  @override
+  void dispose() {
+    _exportSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _startExport(ExportType type) async {
+    setState(() {
+      _isExporting = true;
+      _statusMessage = 'Starting export...';
+    });
+
+    final exportService = ref.read(supabaseExportServiceProvider);
+
+    List<String>? layerIds;
+    if (type == ExportType.pngs && widget.selectedLayer != null) {
+      layerIds = [widget.selectedLayer!.id];
     }
 
-    setState(() {
-      _isExporting = true;
-      _statusMessage = 'Exporting PNG...';
-    });
-
-    final exportService = ref.read(exportServiceProvider);
-    final result = await exportService.exportLayerAsPng(
-      widget.selectedLayer!,
-      projectName: widget.projectName,
-    );
-
-    result.when(
-      success: (file) async {
-        await exportService.shareFile(file);
-        if (mounted) Navigator.pop(context);
-      },
-      failure: (error, _) {
-        _showSnackBar(error);
-        setState(() {
-          _isExporting = false;
-          _statusMessage = null;
-        });
-      },
-    );
-  }
-
-  Future<void> _exportAllAsZip() async {
-    setState(() {
-      _isExporting = true;
-      _statusMessage = 'Creating ZIP...';
-    });
-
-    final exportService = ref.read(exportServiceProvider);
-    final result = await exportService.exportAllLayersAsZip(
-      widget.layers,
-      projectName: widget.projectName,
-    );
-
-    result.when(
-      success: (file) async {
-        await exportService.shareFile(file);
-        if (mounted) Navigator.pop(context);
-      },
-      failure: (error, _) {
-        _showSnackBar(error);
-        setState(() {
-          _isExporting = false;
-          _statusMessage = null;
-        });
-      },
-    );
-  }
-
-  Future<void> _exportAsLayersPack() async {
-    setState(() {
-      _isExporting = true;
-      _statusMessage = 'Creating .layers pack...';
-    });
-
-    final exportService = ref.read(exportServiceProvider);
-    final result = await exportService.exportAsLayersPack(
-      widget.layers,
-      projectName: widget.projectName,
+    final result = await exportService.createExport(
       projectId: widget.projectId,
+      type: type,
+      layerIds: layerIds,
     );
 
     result.when(
-      success: (file) async {
-        await exportService.shareFile(file);
-        if (mounted) Navigator.pop(context);
+      success: (export) {
+        setState(() {
+          _currentExport = export;
+          _statusMessage = 'Processing...';
+        });
+        _subscribeToExport(export.id);
       },
       failure: (error, _) {
         _showSnackBar(error);
@@ -129,6 +90,52 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
         });
       },
     );
+  }
+
+  void _subscribeToExport(String exportId) {
+    final exportService = ref.read(supabaseExportServiceProvider);
+
+    _exportSubscription?.cancel();
+    _exportSubscription = exportService
+        .subscribeToExport(exportId)
+        .listen(
+          (export) {
+            setState(() => _currentExport = export);
+
+            if (export.isComplete && export.assetUrl != null) {
+              setState(() => _statusMessage = 'Ready to download!');
+            } else if (export.isFailed) {
+              _showSnackBar(export.errorMessage ?? 'Export failed');
+              setState(() {
+                _isExporting = false;
+                _statusMessage = null;
+                _currentExport = null;
+              });
+            } else if (export.isProcessing) {
+              setState(() => _statusMessage = 'Building export...');
+            }
+          },
+          onError: (e) {
+            _showSnackBar('Connection error: $e');
+            setState(() {
+              _isExporting = false;
+              _statusMessage = null;
+            });
+          },
+        );
+  }
+
+  Future<void> _downloadExport() async {
+    final url = _currentExport?.assetUrl;
+    if (url == null) return;
+
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (mounted) Navigator.pop(context);
+    } else {
+      _showSnackBar('Could not open download link');
+    }
   }
 
   void _showSnackBar(String message) {
@@ -150,13 +157,33 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
           Text('Export', style: theme.textTheme.headlineSmall),
           const SizedBox(height: 24),
           if (_isExporting) ...[
-            const Center(child: CircularProgressIndicator()),
-            const SizedBox(height: 16),
-            Text(
-              _statusMessage ?? 'Exporting...',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium,
-            ),
+            if (_currentExport?.isComplete == true) ...[
+              Icon(
+                Icons.check_circle,
+                size: 48,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Export Ready!',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: _downloadExport,
+                icon: const Icon(Icons.download),
+                label: const Text('Download'),
+              ),
+            ] else ...[
+              const Center(child: CircularProgressIndicator()),
+              const SizedBox(height: 16),
+              Text(
+                _statusMessage ?? 'Exporting...',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium,
+              ),
+            ],
           ] else ...[
             _ExportOption(
               icon: Icons.image_outlined,
@@ -165,21 +192,21 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
                   ? 'Layer ${widget.selectedLayer!.zIndex}'
                   : 'Select a layer first',
               enabled: widget.selectedLayer != null,
-              onTap: _exportSinglePng,
+              onTap: () => _startExport(ExportType.pngs),
             ),
             const SizedBox(height: 12),
             _ExportOption(
               icon: Icons.folder_zip_outlined,
               title: 'All Layers (ZIP)',
               subtitle: '${widget.layers.length} layers as separate PNGs',
-              onTap: _exportAllAsZip,
+              onTap: () => _startExport(ExportType.zip),
             ),
             const SizedBox(height: 12),
             _ExportOption(
               icon: Icons.layers_outlined,
               title: 'Project Pack (.layers)',
               subtitle: 'Re-importable with all settings',
-              onTap: _exportAsLayersPack,
+              onTap: () => _startExport(ExportType.layersPack),
             ),
           ],
           const SizedBox(height: 16),
