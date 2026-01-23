@@ -15,6 +15,14 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ============================================================
+-- 1.5 DROP EXISTING TABLES (clean slate)
+-- ============================================================
+-- Uncomment these lines if you have existing tables from a previous attempt:
+-- DROP TABLE IF EXISTS exports CASCADE;
+-- DROP TABLE IF EXISTS project_layers CASCADE;
+-- DROP TABLE IF EXISTS projects CASCADE;
+
+-- ============================================================
 -- 2. TABLES
 -- ============================================================
 
