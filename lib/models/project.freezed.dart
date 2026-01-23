@@ -24,6 +24,7 @@ mixin _$Project {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get sourceImagePath => throw _privateConstructorUsedError;
+  String get status => throw _privateConstructorUsedError;
   List<Layer> get layers => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
@@ -47,6 +48,7 @@ abstract class $ProjectCopyWith<$Res> {
     String id,
     String name,
     String sourceImagePath,
+    String status,
     List<Layer> layers,
     DateTime createdAt,
     DateTime? updatedAt,
@@ -72,6 +74,7 @@ class _$ProjectCopyWithImpl<$Res, $Val extends Project>
     Object? id = null,
     Object? name = null,
     Object? sourceImagePath = null,
+    Object? status = null,
     Object? layers = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
@@ -90,6 +93,10 @@ class _$ProjectCopyWithImpl<$Res, $Val extends Project>
             sourceImagePath: null == sourceImagePath
                 ? _value.sourceImagePath
                 : sourceImagePath // ignore: cast_nullable_to_non_nullable
+                      as String,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
                       as String,
             layers: null == layers
                 ? _value.layers
@@ -125,6 +132,7 @@ abstract class _$$ProjectImplCopyWith<$Res> implements $ProjectCopyWith<$Res> {
     String id,
     String name,
     String sourceImagePath,
+    String status,
     List<Layer> layers,
     DateTime createdAt,
     DateTime? updatedAt,
@@ -149,6 +157,7 @@ class __$$ProjectImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? sourceImagePath = null,
+    Object? status = null,
     Object? layers = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
@@ -167,6 +176,10 @@ class __$$ProjectImplCopyWithImpl<$Res>
         sourceImagePath: null == sourceImagePath
             ? _value.sourceImagePath
             : sourceImagePath // ignore: cast_nullable_to_non_nullable
+                  as String,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
                   as String,
         layers: null == layers
             ? _value._layers
@@ -196,6 +209,7 @@ class _$ProjectImpl implements _Project {
     required this.id,
     required this.name,
     required this.sourceImagePath,
+    this.status = 'queued',
     final List<Layer> layers = const [],
     required this.createdAt,
     this.updatedAt,
@@ -212,6 +226,9 @@ class _$ProjectImpl implements _Project {
   final String name;
   @override
   final String sourceImagePath;
+  @override
+  @JsonKey()
+  final String status;
   final List<Layer> _layers;
   @override
   @JsonKey()
@@ -237,7 +254,7 @@ class _$ProjectImpl implements _Project {
 
   @override
   String toString() {
-    return 'Project(id: $id, name: $name, sourceImagePath: $sourceImagePath, layers: $layers, createdAt: $createdAt, updatedAt: $updatedAt, settings: $settings)';
+    return 'Project(id: $id, name: $name, sourceImagePath: $sourceImagePath, status: $status, layers: $layers, createdAt: $createdAt, updatedAt: $updatedAt, settings: $settings)';
   }
 
   @override
@@ -249,6 +266,7 @@ class _$ProjectImpl implements _Project {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.sourceImagePath, sourceImagePath) ||
                 other.sourceImagePath == sourceImagePath) &&
+            (identical(other.status, status) || other.status == status) &&
             const DeepCollectionEquality().equals(other._layers, _layers) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
@@ -264,6 +282,7 @@ class _$ProjectImpl implements _Project {
     id,
     name,
     sourceImagePath,
+    status,
     const DeepCollectionEquality().hash(_layers),
     createdAt,
     updatedAt,
@@ -289,6 +308,7 @@ abstract class _Project implements Project {
     required final String id,
     required final String name,
     required final String sourceImagePath,
+    final String status,
     final List<Layer> layers,
     required final DateTime createdAt,
     final DateTime? updatedAt,
@@ -303,6 +323,8 @@ abstract class _Project implements Project {
   String get name;
   @override
   String get sourceImagePath;
+  @override
+  String get status;
   @override
   List<Layer> get layers;
   @override
