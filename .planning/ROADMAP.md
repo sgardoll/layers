@@ -10,7 +10,7 @@ None
 
 ## Phases
 
-- [ ] **Phase 1: Foundation** — Flutter project setup, architecture, navigation structure
+- [x] **Phase 1: Foundation** — Flutter project setup, architecture, navigation structure
 - [ ] **Phase 2: Backend & API** — Cloud GPU inference integration, job queue, API endpoints
 - [ ] **Phase 3: Core Experience** — 3D viewer, layer management, 2D stack view
 - [ ] **Phase 4: Export & Persistence** — PNG/ZIP/.layers export, project save/load
@@ -25,8 +25,8 @@ None
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: Project scaffold and architecture setup
-- [ ] 01-02: Navigation structure and core UI shell
+- [x] 01-01: Project scaffold and architecture setup
+- [x] 01-02: Navigation structure and core UI shell
 
 ### Phase 2: Backend & API
 **Goal**: Working inference pipeline — image in, layers out via cloud GPU
@@ -79,7 +79,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/2 | Not started | — |
+| 1. Foundation | 2/2 | Complete | 2026-01-23 |
 | 2. Backend & API | 0/3 | Not started | — |
 | 3. Core Experience | 0/3 | Not started | — |
 | 4. Export & Persistence | 0/3 | Not started | — |
