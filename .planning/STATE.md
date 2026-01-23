@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation) — COMPLETE
+Phase: 2 of 5 (Backend & API) — COMPLETE
 Plan: 2 of 2 complete
-Status: Phase complete, ready to plan Phase 2
-Last activity: 2026-01-23 — Phase 1 complete
+Status: Phase complete, ready to plan Phase 3
+Last activity: 2026-01-23 — Phase 2 complete
 
-Progress: ██░░░░░░░░ 20%
+Progress: ████░░░░░░ 40%
 
 ## Performance Metrics
 
@@ -28,9 +28,10 @@ Progress: ██░░░░░░░░ 20%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 2/2 | ~12 min | ~6 min |
+| 02-backend-api | 2/2 | ~15 min | ~7.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01, 01-02
+- Last 5 plans: 01-01, 01-02, 02-01, 02-02
 - Trend: Stable
 
 ## Accumulated Context
@@ -46,6 +47,10 @@ Recent decisions affecting current work:
 - [Phase 01-02]: Bottom tab navigation (Project, Layers, Export, Settings)
 - [Phase 01-02]: ShellRoute pattern for persistent bottom nav
 - [Phase 01-02]: Dark theme default (#1a1a2e background, #6366f1 accent)
+- [Phase 02-01]: fal.ai for Qwen-Image-Layered model (~$0.05/image, 15-30s)
+- [Phase 02-01]: Dart Shelf backend with SQLite for job persistence
+- [Phase 02-01]: Async job queue pattern (submit → poll → complete)
+- [Phase 02-02]: JobNotifier state machine for inference lifecycle
 
 ### Deferred Issues
 
@@ -61,6 +66,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23 23:10
-Stopped at: Phase 1 complete
+Last session: 2026-01-23 22:56
+Stopped at: Phase 2 complete
 Resume file: None
+Next: Plan Phase 3 (Core Experience - 3D viewer, layer management)
