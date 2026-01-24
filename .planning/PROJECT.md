@@ -2,32 +2,41 @@
 
 ## What This Is
 
-A Flutter app that turns any image into editable layers using AI (Qwen Image Layered). Users import an image, the app separates it into transparent layer stacks, and they can view, rearrange, and export layers through a signature 3D "cards in space" viewer. Ships to iOS, Android, macOS, and web.
+A Flutter app that turns any image into editable layers using AI (fal.ai BiRefNet). Users import an image, the app separates it into transparent layer stacks, and they can view, rearrange, and export layers through a signature 3D "cards in space" viewer. Ships to iOS, Android, macOS, and web.
 
 ## Core Value
 
 The 3D layer viewer must feel magical — selecting and navigating layers should be delightful, fast, and unlike anything else. If the viewer doesn't wow users, nothing else matters.
 
+## Current State
+
+**Version:** v1.0 (build 7) — SHIPPED 2026-01-25
+**Platforms:** Android (Play Store), macOS (App Store), iOS (TestFlight)
+**Codebase:** 6,757 lines Dart, 352 files
+**Tech Stack:** Flutter, Supabase, BuildShip, RevenueCat, fal.ai
+
 ## Requirements
 
 ### Validated
 
-(None yet — ship to validate)
+- Import image (camera roll, share sheet, drag-drop) — v1.0
+- Present results in 3D Layer Space View (signature feature) — v1.0
+- Present results in 2D Stack View (utility fallback) — v1.0
+- Layer actions: select, multi-select, hide/show, reorder — v1.0
+- Basic per-layer transforms: move, scale, rotate, opacity — v1.0
+- Export: individual PNGs, ZIP of all layers — v1.0
+- Project save/load — v1.0
+- Processing states: uploading, layering, packaging, ready, failed — v1.0
+- Freemium monetization: free tier limits, Pro subscription — v1.0
+- Cross-platform: iOS, Android, macOS — v1.0
+- Email authentication with RevenueCat linking — v1.0
+- Account deletion with data cleanup — v1.0
 
 ### Active
 
-- [ ] Import image (camera roll, share sheet, drag-drop)
-- [ ] Run Qwen Image Layered inference via cloud GPU
-- [ ] Present results in 3D Layer Space View (signature feature)
-- [ ] Present results in 2D Stack View (utility fallback)
-- [ ] Layer actions: select, multi-select, hide/show, reorder
-- [ ] Basic per-layer transforms: move, scale, rotate, opacity
-- [ ] Export: individual PNGs, ZIP of all layers, .layers pack
-- [ ] Project save/load
-- [ ] Processing states: uploading, layering, packaging, ready, failed
-- [ ] Failure UX: retry presets, "try again" options
-- [ ] Freemium monetization: free tier limits, Pro subscription
-- [ ] Cross-platform: iOS, Android, macOS, web
+- [ ] Run AI layer extraction via BuildShip (workflows specified, needs implementation)
+- [ ] Web platform deployment
+- [ ] .layers pack export format
 
 ### Out of Scope
 
@@ -42,28 +51,21 @@ The 3D layer viewer must feel magical — selecting and navigating layers should
 
 ## Context
 
-**AI Model**: Qwen Image Layered (qwen-lm/qwen-image-layered) — takes a flattened image and produces segmented visual elements with transparency.
+**AI Model**: fal.ai BiRefNet — takes a flattened image and produces segmented visual elements with transparency.
 
-**Target Users**:
-- Designers: professionals pulling apart images for compositing/asset extraction
-- Hobbyists: casual users who want to "pull apart" images without pro tools
+**Backend Architecture**:
+- Supabase: Database (projects, project_layers, exports) + Storage + Auth + Realtime
+- BuildShip: Serverless workflows triggered by DB events (spec complete, implementation pending)
+- RevenueCat: Subscription management with Supabase user linking
 
-**Technical Approach**:
-- "Fake 3D" with transforms recommended for MVP (real 3D is a rabbit hole)
-- Server-side inference required (not on-device)
-- Cloud GPU provider: Replicate, Modal, or RunPod
-- Temporary storage with auto-expire (24h unless user saves)
-
-**Key UX Considerations**:
-- Layer quality varies by image — need retry presets and expectation setting
-- Soft cap on layers (~30 live in 3D) to prevent UI hell
-- Use thumbnails during navigation, full-res only for export/focus
+**Known Issues**:
+- BuildShip workflow processing nodes need manual setup using `.planning/phases/09-buildship-workflow-spec/SPEC.md`
+- Old `backend/` folder contains deprecated Dart Shelf backend (can be deleted)
 
 ## Constraints
 
 - **Tech stack**: Flutter (cross-platform requirement)
-- **Backend**: Cloud GPU inference (Replicate/Modal/RunPod) — no on-device processing for v1
-- **Timeline**: Quick build to validate with real paying users
+- **Backend**: Supabase + BuildShip (serverless)
 - **Performance**: 60fps in 3D viewer, aggressive thumbnail caching
 - **Platform scope**: iOS, Android, macOS, web — all from Flutter codebase
 
@@ -71,11 +73,12 @@ The 3D layer viewer must feel magical — selecting and navigating layers should
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Flutter for all platforms | Single codebase for iOS/Android/macOS/web | — Pending |
-| "Fake 3D" over real 3D engine | Ship faster, avoid plugin complexity rabbit hole | — Pending |
-| .layers pack over PSD for v1 | Control the format, add PSD later if demanded | — Pending |
-| Cloud GPU over on-device | Required for model size, simpler mobile app | — Pending |
-| Freemium over one-time purchase | Recurring revenue, validates ongoing value | — Pending |
+| Flutter for all platforms | Single codebase for iOS/Android/macOS/web | Good |
+| "Fake 3D" over real 3D engine | Ship faster, avoid plugin complexity rabbit hole | Good |
+| Supabase + BuildShip over custom backend | Serverless, realtime, no server management | Good |
+| RevenueCat for subscriptions | Cross-platform, handles receipt validation | Good |
+| fal.ai BiRefNet for layer extraction | Production-ready API, no GPU infrastructure | Pending (needs BuildShip impl) |
+| Email auth over anonymous | Subscription persistence across devices | Good |
 
 ---
-*Last updated: 2026-01-23 after initialization*
+*Last updated: 2026-01-25 after v1.0 milestone*
