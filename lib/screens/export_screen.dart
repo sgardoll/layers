@@ -34,18 +34,14 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
   }
 
   Future<void> _loadExports() async {
-    if (widget.projectId == null) {
-      setState(() {
-        _isLoading = false;
-        _error = 'No project selected';
-      });
-      return;
-    }
-
     setState(() => _isLoading = true);
 
     final exportService = ref.read(supabaseExportServiceProvider);
-    final result = await exportService.listExports(widget.projectId!);
+
+    // Load all exports if no projectId, otherwise filter by project
+    final result = widget.projectId != null
+        ? await exportService.listExports(widget.projectId!)
+        : await exportService.listAllExports();
 
     result.when(
       success: (exports) {

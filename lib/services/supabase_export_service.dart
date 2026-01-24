@@ -90,6 +90,25 @@ class SupabaseExportService {
     }
   }
 
+  /// List all exports across all projects (for Export tab)
+  Future<Result<List<ExportJob>>> listAllExports() async {
+    try {
+      final response = await _client
+          .from('exports')
+          .select()
+          .order('created_at', ascending: false)
+          .limit(50);
+
+      final exports = (response as List)
+          .map((row) => _exportFromRow(row))
+          .toList();
+
+      return Success(exports);
+    } catch (e) {
+      return Failure('Failed to list exports: $e');
+    }
+  }
+
   Future<Result<void>> deleteExport(String exportId) async {
     try {
       await _client.from('exports').delete().eq('id', exportId);

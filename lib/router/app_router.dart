@@ -50,6 +50,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
+                path: '/exports',
+                name: 'exports',
+                builder: (context, state) => const ExportScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
                 path: '/settings',
                 name: 'settings',
                 builder: (context, state) => const SettingsScreen(),

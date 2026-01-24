@@ -22,12 +22,17 @@ class AppShell extends StatelessWidget {
           NavigationDestination(
             icon: Icon(Icons.add_photo_alternate_outlined),
             selectedIcon: Icon(Icons.add_photo_alternate),
-            label: 'Project',
+            label: 'Projects',
           ),
           NavigationDestination(
             icon: Icon(Icons.layers_outlined),
             selectedIcon: Icon(Icons.layers),
             label: 'Layers',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.file_download_outlined),
+            selectedIcon: Icon(Icons.file_download),
+            label: 'Exports',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),

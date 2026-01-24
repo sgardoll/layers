@@ -163,6 +163,25 @@ class SupabaseProjectService {
 
   Future<Result<void>> deleteProject(String projectId) async {
     try {
+      // Get project to retrieve storage path
+      final projectResult = await getProject(projectId);
+      String? storagePath;
+      projectResult.when(
+        success: (project) => storagePath = project.sourceImagePath,
+        failure: (_, __) {},
+      );
+
+      // Delete storage file if path exists
+      if (storagePath != null && storagePath!.isNotEmpty) {
+        try {
+          await _client.storage.from('source-images').remove([storagePath!]);
+        } catch (e) {
+          // Log but don't fail if storage delete fails
+          print('Warning: Failed to delete storage file: $e');
+        }
+      }
+
+      // Delete database row
       await _client.from('projects').delete().eq('id', projectId);
 
       return const Success(null);
