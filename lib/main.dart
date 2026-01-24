@@ -3,10 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/supabase_client.dart';
 import 'router/app_router.dart';
+import 'services/revenuecat_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initSupabase();
+
+  // Initialize RevenueCat for subscriptions
+  final revenueCat = RevenueCatService();
+  await revenueCat.initialize();
+
   runApp(const ProviderScope(child: LayersApp()));
 }
 

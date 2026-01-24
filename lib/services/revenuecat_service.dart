@@ -8,7 +8,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 ///
 /// Handles initialization, purchase flow, and entitlement checking.
 class RevenueCatService {
-  static const String _entitlementId = 'pro';
+  static const String _entitlementId = 'Layers Pro';
 
   bool _isInitialized = false;
 
