@@ -6,34 +6,19 @@
 
 ## Open Issues
 
-### UAT-001: Delete project doesn't remove storage file
-
-**Discovered:** 2026-01-24
-**Phase/Plan:** 04-02
-**Severity:** Minor
-**Feature:** Delete project
-**Description:** When deleting a project, the database row is removed but the uploaded image file remains in the `source-images` storage bucket.
-**Expected:** Both database entry AND storage file should be deleted
-**Actual:** Only database entry deleted, storage file orphaned
-**Repro:**
-1. Create a project (upload image)
-2. Delete the project via 3-dot menu
-3. Check Supabase storage - file still exists
-
-### UAT-002: Export screen not accessible
-
-**Discovered:** 2026-01-24
-**Phase/Plan:** 04-01
-**Severity:** Minor
-**Feature:** Export history screen
-**Description:** ExportScreen was built but there's no navigation route to access it from the app.
-**Expected:** Export screen accessible from bottom nav or project menu
-**Actual:** No way to navigate to export screen
-**Repro:** Look for Export option in navigation - doesn't exist
+[All resolved]
 
 ## Resolved Issues
 
-[None yet]
+### UAT-001: Delete project doesn't remove storage file
+**Resolved:** 2026-01-24 - Fixed in commit 0e63a90
+**Description:** When deleting a project, the database row is removed but the uploaded image file remains in the `source-images` storage bucket.
+**Fix:** Added deleteStorageFile method to SupabaseProjectService. deleteProject now cleans up source-images bucket.
+
+### UAT-002: Export screen not accessible
+**Resolved:** 2026-01-24 - Fixed in commit 0e63a90
+**Description:** ExportScreen was built but there's no navigation route to access it from the app.
+**Fix:** Added Exports tab to bottom navigation bar, added /exports route to app router, modified ExportScreen to show all exports when no projectId.
 
 ---
 
