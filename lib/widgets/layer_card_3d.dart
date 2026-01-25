@@ -28,8 +28,13 @@ class LayerCard3D extends StatelessWidget {
   Widget build(BuildContext context) {
     final zOffset = (index - totalLayers / 2) * spacing;
 
+    // Perspective must be on same Transform as Z-translation for 3D to work
+    final transform = Matrix4.identity()
+      ..setEntry(3, 2, 0.001) // perspective
+      ..translate(0.0, 0.0, zOffset);
+
     return Transform(
-      transform: Matrix4.identity()..translate(0.0, 0.0, zOffset),
+      transform: transform,
       alignment: Alignment.center,
       child: GestureDetector(
         onTap: onTap,
@@ -56,16 +61,21 @@ class LayerCard3D extends StatelessWidget {
                 CachedNetworkImage(
                   imageUrl: layer.pngUrl,
                   fit: BoxFit.contain,
+                  fadeInDuration: Duration.zero,
+                  fadeOutDuration: Duration.zero,
                   placeholder: (context, url) => Container(
                     color: Colors.grey[900],
                     child: const Center(
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   ),
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.grey[900],
-                    child: const Icon(Icons.broken_image, color: Colors.grey),
-                  ),
+                  errorWidget: (context, url, error) {
+                    debugPrint('❌ Layer image failed: $url - $error');
+                    return Container(
+                      color: Colors.grey[900],
+                      child: const Icon(Icons.broken_image, color: Colors.grey),
+                    );
+                  },
                 ),
                 if (!layer.visible)
                   Positioned.fill(

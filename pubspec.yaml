@@ -1,7 +1,7 @@
 name: layers
 description: "Turn any image into editable layers in seconds"
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.1.0+8
 
 environment:
   sdk: ^3.10.0
@@ -48,8 +48,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  
-  # Code generation
+  mockito: ^5.4.4
   build_runner: ^2.4.13
   freezed: ^2.5.7
   json_serializable: ^6.9.0

@@ -22,11 +22,10 @@ class SupabaseProjectService {
     Map<String, dynamic> params = const {},
   }) async {
     try {
-      final projectId =
-          _client.auth.currentUser?.id ??
-          DateTime.now().millisecondsSinceEpoch.toString();
+      // Generate unique ID for this project's storage folder
+      final uniqueId = DateTime.now().millisecondsSinceEpoch.toString();
       final ext = p.extension(imageFile.path);
-      final storagePath = '$_userId/$projectId/source$ext';
+      final storagePath = '$_userId/$uniqueId/source$ext';
 
       final bytes = await imageFile.readAsBytes();
       await _client.storage
@@ -45,8 +44,10 @@ class SupabaseProjectService {
           .single();
 
       return Success(_projectFromRow(response));
-    } catch (e) {
-      return Failure('Failed to create project: $e');
+    } catch (e, stackTrace) {
+      print('❌ createProject failed: $e');
+      print('Stack trace: $stackTrace');
+      return Failure('Failed to create project: $e', e);
     }
   }
 
@@ -226,6 +227,19 @@ class SupabaseProjectService {
     );
   }
 
+  /// Constructs full Supabase Storage URL if only path is stored
+  String _buildStorageUrl(String? pngUrl) {
+    if (pngUrl == null || pngUrl.isEmpty) return '';
+    if (pngUrl.startsWith('http://') || pngUrl.startsWith('https://')) {
+      return pngUrl; // Already a full URL
+    }
+    // Build full URL from path
+    final baseUrl = _client.storage.url;
+    // Path may or may not include bucket name, normalize it
+    final path = pngUrl.startsWith('layers/') ? pngUrl : 'layers/$pngUrl';
+    return '$baseUrl/object/public/$path';
+  }
+
   Layer _layerFromRow(Map<String, dynamic> row) {
     final transform = row['transform'] as Map<String, dynamic>? ?? {};
     final bbox = row['bbox'] as Map<String, dynamic>?;
@@ -233,7 +247,7 @@ class SupabaseProjectService {
     return Layer(
       id: row['id'],
       name: row['name'],
-      pngUrl: row['png_url'] ?? '',
+      pngUrl: _buildStorageUrl(row['png_url']),
       width: row['width'],
       height: row['height'],
       zIndex: row['z_index'],

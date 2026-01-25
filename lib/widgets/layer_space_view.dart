@@ -125,7 +125,9 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
         alignment: Alignment.center,
         children: [
           for (var i = 0; i < sortedLayers.length; i++)
-            Positioned.fill(
+            SizedBox(
+              width: 400,
+              height: 400,
               child: LayerCard3D(
                 layer: sortedLayers[i],
                 index: i,

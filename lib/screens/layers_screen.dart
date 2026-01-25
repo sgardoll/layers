@@ -2,20 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/layer_provider.dart';
+import '../providers/project_provider.dart';
 import '../providers/view_mode_provider.dart';
+import '../services/supabase_project_service.dart';
 import '../widgets/layer_space_view.dart';
 import '../widgets/stack_view_2d.dart';
 import '../widgets/layer_list_panel.dart';
 import '../widgets/view_mode_toggle.dart';
+
+/// Provider that fetches layers for the current project
+final _layersFetchProvider = FutureProvider.autoDispose<void>((ref) async {
+  final project = ref.watch(currentProjectProvider);
+  if (project == null) return;
+
+  final service = ref.read(supabaseProjectServiceProvider);
+  final result = await service.getProjectLayers(project.id);
+
+  result.when(
+    success: (layers) {
+      ref.read(layerProvider.notifier).setLayers(layers);
+    },
+    failure: (message, error) {
+      // Layers fetch failed - layerProvider will remain empty
+      // Could add error handling UI if needed
+    },
+  );
+});
 
 class LayersScreen extends ConsumerWidget {
   const LayersScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Trigger layer fetch when screen loads
+    ref.watch(_layersFetchProvider);
+
     final viewMode = ref.watch(viewModeProvider);
     final layerState = ref.watch(layerProvider);
     final layerNotifier = ref.read(layerProvider.notifier);
+    final isLoading = ref.watch(_layersFetchProvider).isLoading;
     final hasLayers = layerState.layers.isNotEmpty;
 
     return Scaffold(
@@ -24,7 +49,9 @@ class LayersScreen extends ConsumerWidget {
         centerTitle: true,
         actions: [const ViewModeToggle(), const SizedBox(width: 8)],
       ),
-      body: hasLayers
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : hasLayers
           ? Row(
               children: [
                 Expanded(

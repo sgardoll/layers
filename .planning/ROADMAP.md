@@ -33,7 +33,14 @@ Build a Flutter app that transforms images into editable layer stacks via AI inf
 
 ## Current Milestone
 
-No active milestone. Run `/gsd-new-milestone` to plan next version.
+### v1.1 Polish & Verification
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 13. App Flow Verification | Verify status:ready → layers screen flow | Complete |
+
+**Completed:**
+- Fixed LayersScreen to auto-fetch layers from Supabase on mount (was missing fetch call)
 
 ## Domain Expertise
 

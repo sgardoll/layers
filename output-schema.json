@@ -1,0 +1,85 @@
+{
+  "buildship": {
+    "index": 0
+  },
+  "properties": {
+    "type": {
+      "type": "string",
+      "title": "type",
+      "buildship": {
+        "index": 0
+      }
+    },
+    "file": {
+      "title": "file",
+      "properties": {
+        "type": {
+          "title": "type",
+          "buildship": {
+            "index": 0
+          },
+          "type": "string"
+        }
+      },
+      "buildship": {
+        "index": 1
+      },
+      "type": "object"
+    },
+    "data": {
+      "properties": {
+        "integer": {
+          "title": "integer",
+          "type": "number",
+          "buildship": {
+            "index": 0
+          }
+        }
+      },
+      "title": "data",
+      "buildship": {
+        "index": 2
+      },
+      "type": "array"
+    },
+    "size": {
+      "buildship": {
+        "index": 3
+      },
+      "title": "size",
+      "type": "number"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "mimetype": {
+          "buildship": {
+            "index": 0
+          },
+          "type": "string",
+          "title": "mimetype"
+        },
+        "url": {
+          "format": "uri",
+          "buildship": {
+            "index": 1
+          },
+          "type": "string",
+          "title": "url"
+        }
+      },
+      "buildship": {
+        "index": 4
+      },
+      "title": "metadata"
+    },
+    "convertTo": {
+      "title": "convertTo",
+      "type": "object",
+      "buildship": {
+        "index": 5
+      }
+    }
+  },
+  "type": "object"
+}

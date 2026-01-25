@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 ## Current Position
 
-Phase: Complete (12 of 12)
-Plan: N/A
-Status: v1.0 SHIPPED
-Last activity: 2026-01-25 — v1.0 milestone complete
+Phase: 13 (App Flow Verification)
+Plan: Complete
+Status: v1.1 in progress
+Last activity: 2026-01-25 — Fixed LayersScreen to fetch layers on mount
 
-Progress: [============] 100% (23/23 plans)
+Progress: [============] 100% (1/1 plans for Phase 13)
 
 ## Shipped Builds
 
@@ -24,20 +24,24 @@ Progress: [============] 100% (23/23 plans)
 
 ## Next Steps
 
-1. Implement BuildShip workflow processing nodes (see `.planning/phases/09-buildship-workflow-spec/SPEC.md`)
-2. Plan v1.1 milestone (web platform, .layers export, user feedback)
+1. Test end-to-end flow: create project → BuildShip processes → app shows layers
+2. Plan v1.1 features (web platform, .layers export, user feedback)
 
 ## Accumulated Context
 
 ### Key Decisions (this milestone)
 - Supabase + BuildShip replaced custom Dart backend
-- fal.ai BiRefNet for AI layer extraction
+- fal.ai BiRefNet for AI layer extraction (via Wavespeed)
 - Email auth with RevenueCat user linking
 - Theme colors from app icon (#1C39EC, #00A9FE)
 
+### Completed This Session
+- BuildShip workflow fully implemented (triggers on project insert, extracts layers, uploads to storage)
+- Fixed LayersScreen to auto-fetch layers from Supabase on mount
+
 ### Open Items
-- BuildShip workflows have triggers but need processing nodes
 - Old `backend/` folder can be deleted
+- End-to-end testing needed
 
 ### Blockers
 None
