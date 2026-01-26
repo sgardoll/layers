@@ -315,25 +315,34 @@ class _ProjectCard extends StatelessWidget {
   }
 
   Widget _buildThumbnail(BuildContext context) {
-    // Generate public URL from storage path
+    // Generate signed URL from storage path
     if (project.sourceImagePath.isEmpty) {
       return _buildPlaceholder(context);
     }
 
-    final String imageUrl;
     if (project.sourceImagePath.startsWith('http')) {
-      imageUrl = project.sourceImagePath;
-    } else {
-      // Build public URL from storage path
-      imageUrl = Supabase.instance.client.storage
-          .from('source-images')
-          .getPublicUrl(project.sourceImagePath);
+      return Image.network(
+        project.sourceImagePath,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _buildPlaceholder(context),
+      );
     }
 
-    return Image.network(
-      imageUrl,
-      fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => _buildPlaceholder(context),
+    // Use FutureBuilder to get signed URL for private bucket
+    return FutureBuilder<String>(
+      future: Supabase.instance.client.storage
+          .from('source-images')
+          .createSignedUrl(project.sourceImagePath, 3600), // 1 hour expiry
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Image.network(
+            snapshot.data!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _buildPlaceholder(context),
+          );
+        }
+        return _buildPlaceholder(context);
+      },
     );
   }
 
