@@ -31,17 +31,33 @@ Build a Flutter app that transforms images into editable layer stacks via AI inf
 
 </details>
 
+## Completed Milestones
+
+<details>
+<summary>v1.1 Polish & Verification (Phases 13-14) — SHIPPED 2026-01-26</summary>
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 13. App Flow Verification | 1/1 | Complete | 2026-01-26 |
+| 14. Remove Layers from App Bar | 1/1 | Complete | 2026-01-26 |
+
+**Key Changes:**
+- Fixed 3D layer viewer (perspective must be on same Transform as Z-translation)
+- Fixed LayersScreen to auto-fetch layers from Supabase on mount
+- Fixed bundle IDs to com.connectio.layers across all platforms
+- Removed Layers tab from navigation (3-tab layout: Projects, Exports, Settings)
+
+</details>
+
 ## Current Milestone
 
-### v1.1 Polish & Verification
+### v1.2 Features (Planned)
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 13. App Flow Verification | Verify status:ready → layers screen flow | Complete |
-| 14. Remove Layers from App Bar | Remove "Layers" from app bar - access via Project/Export tabs | Not Started |
-
-**Completed:**
-- Fixed LayersScreen to auto-fetch layers from Supabase on mount (was missing fetch call)
+| TBD | Web platform support | Not Started |
+| TBD | .layers export format | Not Started |
+| TBD | Per-export pricing | Not Started |
 
 ## Domain Expertise
 

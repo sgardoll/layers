@@ -9,18 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 ## Current Position
 
-Phase: 14 (Remove Layers from App Bar)
-Plan: Complete
-Status: v1.1 in progress
-Last activity: 2026-01-26 — Removed Layers tab from navigation
+Phase: v1.1 Complete
+Plan: N/A
+Status: v1.2 planning
+Last activity: 2026-01-26 — v1.1.1 build 9 deployed to all stores
 
-Progress: [============] 100% (1/1 plans for Phase 14)
+Progress: Milestone complete — ready for v1.2
 
 ## Shipped Builds
 
-- Android: `~/Desktop/Layers-1.0.0-build7-signed.aab` (Play Store)
-- macOS: `~/Desktop/Layers-1.0.0-build7.xcarchive` (App Store)
-- iOS: `~/Desktop/Layers-1.0.0-build5.xcarchive` (TestFlight)
+- v1.1.1 build 9 (2026-01-26):
+  - iOS: TestFlight
+  - Android: Play Store
+  - macOS: App Store Connect
 
 ## Next Steps
 
