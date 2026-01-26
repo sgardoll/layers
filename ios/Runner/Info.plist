@@ -51,5 +51,7 @@
 	<string>Layers needs permission to save exported layers to your photo library.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Layers can use your camera to capture images for layer separation.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
