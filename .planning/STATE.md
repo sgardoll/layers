@@ -46,6 +46,7 @@ Progress: Milestone complete — ready for v1.2
 
 ### Roadmap Evolution
 - Phase 14 added: Remove "Layers" from app bar - access via Project/Export tabs
+- Phase 15 added: Critical Bug Fixes (URGENT) - iOS project creation, image preview, RevenueCat subscriptions
 
 ### Blockers
 None

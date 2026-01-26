@@ -68,10 +68,18 @@ class RevenueCatService {
 
   /// Get available subscription offerings.
   Future<Offerings?> getOfferings() async {
-    if (!_isInitialized) return null;
+    if (!_isInitialized) {
+      debugPrint('RevenueCat: getOfferings called but not initialized');
+      return null;
+    }
 
     try {
-      return await Purchases.getOfferings();
+      final offerings = await Purchases.getOfferings();
+      debugPrint(
+        'RevenueCat: Got offerings - current: ${offerings.current?.identifier}, '
+        'packages: ${offerings.current?.availablePackages.length ?? 0}',
+      );
+      return offerings;
     } catch (e) {
       debugPrint('RevenueCat: Failed to get offerings: $e');
       return null;

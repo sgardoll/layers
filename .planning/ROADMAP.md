@@ -51,13 +51,33 @@ Build a Flutter app that transforms images into editable layer stacks via AI inf
 
 ## Current Milestone
 
-### v1.2 Features (Planned)
+### v1.2 Features
 
 | Phase | Description | Status |
 |-------|-------------|--------|
+| 15 | Critical Bug Fixes | Not Started |
 | TBD | Web platform support | Not Started |
 | TBD | .layers export format | Not Started |
 | TBD | Per-export pricing | Not Started |
+
+---
+
+### Phase 15: Critical Bug Fixes (URGENT)
+
+**Goal:** Fix critical issues discovered in production testing
+**Depends on:** v1.1 complete
+**Plans:** 0 plans
+
+**Issues to fix:**
+1. iOS: Image selected but not added to projects table (works on Mac/Android)
+2. All platforms: No image preview shown in Projects screen
+3. All platforms: RevenueCat subscription options not displaying (real devices)
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 15 to break down)
+
+**Details:**
+[To be added during planning]
 
 ## Domain Expertise
 

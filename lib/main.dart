@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/supabase_client.dart';
+import 'providers/entitlement_provider.dart';
 import 'router/app_router.dart';
 import 'services/revenuecat_service.dart';
 
@@ -13,7 +14,15 @@ void main() async {
   final revenueCat = RevenueCatService();
   await revenueCat.initialize();
 
-  runApp(const ProviderScope(child: LayersApp()));
+  runApp(
+    ProviderScope(
+      overrides: [
+        // Pass the initialized RevenueCat instance to the provider system
+        revenueCatServiceProvider.overrideWithValue(revenueCat),
+      ],
+      child: const LayersApp(),
+    ),
+  );
 }
 
 class LayersApp extends ConsumerWidget {

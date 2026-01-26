@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/project.dart';
 import '../providers/project_provider.dart';
@@ -50,10 +49,11 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
 
     if (image == null) return;
 
-    final file = File(image.path);
-    final name = image.name.split('.').first;
+    // Read bytes directly from XFile (works on iOS sandbox)
+    final bytes = await image.readAsBytes();
+    final fileName = image.name;
 
-    await ref.read(projectListProvider.notifier).createProject(file);
+    await ref.read(projectListProvider.notifier).createProject(bytes, fileName);
   }
 
   void _navigateToProject(Project project) {
@@ -315,21 +315,26 @@ class _ProjectCard extends StatelessWidget {
   }
 
   Widget _buildThumbnail(BuildContext context) {
-    // Try to load from local path first, then from URL
-    if (project.sourceImagePath.startsWith('http')) {
-      return Image.network(
-        project.sourceImagePath,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _buildPlaceholder(context),
-      );
-    } else if (File(project.sourceImagePath).existsSync()) {
-      return Image.file(
-        File(project.sourceImagePath),
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _buildPlaceholder(context),
-      );
+    // Generate public URL from storage path
+    if (project.sourceImagePath.isEmpty) {
+      return _buildPlaceholder(context);
     }
-    return _buildPlaceholder(context);
+
+    final String imageUrl;
+    if (project.sourceImagePath.startsWith('http')) {
+      imageUrl = project.sourceImagePath;
+    } else {
+      // Build public URL from storage path
+      imageUrl = Supabase.instance.client.storage
+          .from('source-images')
+          .getPublicUrl(project.sourceImagePath);
+    }
+
+    return Image.network(
+      imageUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => _buildPlaceholder(context),
+    );
   }
 
   Widget _buildPlaceholder(BuildContext context) {
@@ -427,12 +432,15 @@ class _ProjectCard extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: textColor),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: textColor,
-              fontWeight: FontWeight.w500,
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: textColor,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

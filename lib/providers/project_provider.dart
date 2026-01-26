@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -69,8 +69,14 @@ class ProjectListNotifier extends StateNotifier<ProjectListState> {
     );
   }
 
-  Future<Result<Project>> createProject(File imageFile) async {
-    final result = await _service.createProject(imageFile: imageFile);
+  Future<Result<Project>> createProject(
+    Uint8List imageBytes,
+    String fileName,
+  ) async {
+    final result = await _service.createProject(
+      imageBytes: imageBytes,
+      fileName: fileName,
+    );
 
     result.when(
       success: (project) {

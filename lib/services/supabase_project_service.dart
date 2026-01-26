@@ -18,19 +18,19 @@ class SupabaseProjectService {
   String get _userId => _client.auth.currentUser?.id ?? 'anonymous';
 
   Future<Result<Project>> createProject({
-    required File imageFile,
+    required Uint8List imageBytes,
+    required String fileName,
     Map<String, dynamic> params = const {},
   }) async {
     try {
       // Generate unique ID for this project's storage folder
       final uniqueId = DateTime.now().millisecondsSinceEpoch.toString();
-      final ext = p.extension(imageFile.path);
+      final ext = p.extension(fileName);
       final storagePath = '$_userId/$uniqueId/source$ext';
 
-      final bytes = await imageFile.readAsBytes();
       await _client.storage
           .from('source-images')
-          .uploadBinary(storagePath, bytes);
+          .uploadBinary(storagePath, imageBytes);
 
       final response = await _client
           .from('projects')
