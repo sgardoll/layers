@@ -9,15 +9,20 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 ## Current Position
 
-Phase: v1.1 Complete
-Plan: N/A
-Status: v1.2 planning
-Last activity: 2026-01-26 — v1.1.1 build 9 deployed to all stores
+Phase: 15 of 15 (Critical Bug Fixes)
+Plan: Complete
+Status: v1.2 Phase 15 complete
+Last activity: 2026-01-26 — v1.1.2 build 14 deployed to all stores
 
-Progress: Milestone complete — ready for v1.2
+Progress: Phase 15 complete — all critical bugs fixed
 
 ## Shipped Builds
 
+- v1.1.2 build 14 (2026-01-26):
+  - iOS: TestFlight
+  - Android: Play Store (build 14)
+  - macOS: App Store Connect (build 13)
+  
 - v1.1.1 build 9 (2026-01-26):
   - iOS: TestFlight
   - Android: Play Store
@@ -46,7 +51,14 @@ Progress: Milestone complete — ready for v1.2
 
 ### Roadmap Evolution
 - Phase 14 added: Remove "Layers" from app bar - access via Project/Export tabs
-- Phase 15 added: Critical Bug Fixes (URGENT) - iOS project creation, image preview, RevenueCat subscriptions
+- Phase 15 complete: Critical Bug Fixes - all issues resolved
+
+### Phase 15 Fixes (2026-01-26)
+- iOS image picker: Use XFile.readAsBytes() for sandboxing compatibility
+- Image thumbnails: Use signed URLs instead of public URLs
+- RevenueCat: Pass initialized instance to ProviderScope
+- Status badge overflow: Flexible wrapper with ellipsis
+- Export compliance: Added ITSAppUsesNonExemptEncryption to Info.plist
 
 ### Blockers
 None

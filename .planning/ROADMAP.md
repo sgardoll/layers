@@ -2,6 +2,8 @@
 
 ## Milestones
 
+- [v1.2 Critical Fixes](milestones/v1.2-critical-fixes.md) (Phase 15) — SHIPPED 2026-01-26
+- [v1.1 Polish](milestones/v1.1-ROADMAP.md) (Phases 13-14) — SHIPPED 2026-01-26
 - [v1.0 MVP](milestones/v1.0-ROADMAP.md) (Phases 1-12) — SHIPPED 2026-01-25
 
 ## Overview
@@ -53,31 +55,27 @@ Build a Flutter app that transforms images into editable layer stacks via AI inf
 
 ### v1.2 Features
 
-| Phase | Description | Status |
-|-------|-------------|--------|
-| 15 | Critical Bug Fixes | Not Started |
-| TBD | Web platform support | Not Started |
-| TBD | .layers export format | Not Started |
-| TBD | Per-export pricing | Not Started |
+| Phase | Description | Status | Completed |
+|-------|-------------|--------|-----------|
+| 15 | Critical Bug Fixes | Complete | 2026-01-26 |
+| TBD | Web platform support | Not Started | |
+| TBD | .layers export format | Not Started | |
+| TBD | Per-export pricing | Not Started | |
 
 ---
 
-### Phase 15: Critical Bug Fixes (URGENT)
+### Phase 15: Critical Bug Fixes — COMPLETE
 
 **Goal:** Fix critical issues discovered in production testing
-**Depends on:** v1.1 complete
-**Plans:** 0 plans
+**Completed:** 2026-01-26
+**Version:** v1.1.2 build 14
 
-**Issues to fix:**
-1. iOS: Image selected but not added to projects table (works on Mac/Android)
-2. All platforms: No image preview shown in Projects screen
-3. All platforms: RevenueCat subscription options not displaying (real devices)
-
-Plans:
-- [ ] TBD (run /gsd-plan-phase 15 to break down)
-
-**Details:**
-[To be added during planning]
+**Issues fixed:**
+1. ✅ iOS image picker: Use XFile.readAsBytes() for sandboxing compatibility
+2. ✅ Image thumbnails: Use signed URLs instead of public URLs  
+3. ✅ RevenueCat: Pass initialized instance to ProviderScope
+4. ✅ Status badge overflow: Flexible wrapper with ellipsis
+5. ✅ Export compliance: Added ITSAppUsesNonExemptEncryption
 
 ## Domain Expertise
 
