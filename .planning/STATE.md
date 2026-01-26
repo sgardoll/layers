@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 ## Current Position
 
-Phase: 13 (App Flow Verification)
+Phase: 14 (Remove Layers from App Bar)
 Plan: Complete
 Status: v1.1 in progress
-Last activity: 2026-01-25 — Fixed LayersScreen to fetch layers on mount
+Last activity: 2026-01-26 — Removed Layers tab from navigation
 
-Progress: [============] 100% (1/1 plans for Phase 13)
+Progress: [============] 100% (1/1 plans for Phase 14)
 
 ## Shipped Builds
 
