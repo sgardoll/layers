@@ -8,7 +8,7 @@
 PRODUCT_NAME = layers
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.layers.layers
+PRODUCT_BUNDLE_IDENTIFIER = com.connectio.layers
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.layers. All rights reserved.

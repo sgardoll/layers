@@ -38,6 +38,7 @@ Build a Flutter app that transforms images into editable layer stacks via AI inf
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 13. App Flow Verification | Verify status:ready → layers screen flow | Complete |
+| 14. Remove Layers from App Bar | Remove "Layers" from app bar - access via Project/Export tabs | Not Started |
 
 **Completed:**
 - Fixed LayersScreen to auto-fetch layers from Supabase on mount (was missing fetch call)

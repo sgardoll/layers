@@ -43,5 +43,8 @@ Progress: [============] 100% (1/1 plans for Phase 13)
 - Old `backend/` folder can be deleted
 - End-to-end testing needed
 
+### Roadmap Evolution
+- Phase 14 added: Remove "Layers" from app bar - access via Project/Export tabs
+
 ### Blockers
 None
