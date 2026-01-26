@@ -25,11 +25,6 @@ class AppShell extends StatelessWidget {
             label: 'Projects',
           ),
           NavigationDestination(
-            icon: Icon(Icons.layers_outlined),
-            selectedIcon: Icon(Icons.layers),
-            label: 'Layers',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.file_download_outlined),
             selectedIcon: Icon(Icons.file_download),
             label: 'Exports',

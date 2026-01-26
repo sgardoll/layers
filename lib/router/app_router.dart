@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../screens/project_screen.dart';
-import '../screens/layers_screen.dart';
+
 import '../screens/export_screen.dart';
 import '../screens/settings_screen.dart';
 import '../widgets/app_shell.dart';
@@ -28,22 +28,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: '/project',
                 name: 'project',
                 builder: (context, state) => const ProjectScreen(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/layers',
-                name: 'layers',
-                builder: (context, state) => const LayersScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'export',
-                    name: 'export',
-                    builder: (context, state) => const ExportScreen(),
-                  ),
-                ],
               ),
             ],
           ),
