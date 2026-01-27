@@ -1,0 +1,180 @@
+{
+  "name": "Build Export",
+  "description": "Process export requests - composite layers into output file",
+  "lastUpdated": "2026-01-27",
+  "status": "PRODUCTION",
+  "nodes": [
+    {
+      "id": "4543b35a-972f-43b4-b738-20f3088796c3",
+      "type": "set-variable",
+      "label": "Set Variable",
+      "config": {
+        "name": "supabase_url",
+        "value": "https://dbluxquekhkihatcjplz.supabase.co"
+      }
+    },
+    {
+      "id": "a908e397-4312-41ef-a69b-27ec391682f0",
+      "type": "script",
+      "label": "Log Message to Console",
+      "config": {
+        "message": "inputs.record"
+      }
+    },
+    {
+      "id": "cc4709a5-6f4b-4714-b1a8-b446ffe6d3b7",
+      "type": "script",
+      "label": "Get Row",
+      "config": {
+        "table": "project_layers",
+        "supabaseUrl": "state.supabase_url",
+        "filter": "`project_id=eq.${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].project_id}&visible=eq.true`",
+        "kbIntegrationKey": "supabase;;supabase-key-layers"
+      }
+    },
+    {
+      "id": "418779f3-0170-4949-a16d-0a97c9cdeec6",
+      "type": "switch",
+      "label": "Switch",
+      "config": {
+        "executionType": "first_match",
+        "conditions": {
+          "condition_1": "ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].type === \"zip\"",
+          "condition_244204a8_ba4d_47b9_a2c1_75e048ed5493": "ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].type === \"layersPack\"",
+          "condition_57b1f785_f3e7_45be_bd25_85a80e42e941": "ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].type === \"pngs\""
+        }
+      },
+      "branches": {
+        "condition_1_zip": [
+          {
+            "id": "8469133c-23f9-498a-97b1-d8c4f2f85c31",
+            "label": "Combine A List Of URLs Into Zip Archive",
+            "config": {
+              "urls": "cc4709a5.png_url",
+              "zipFileName": "`${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].project_id}.zip`"
+            }
+          },
+          {
+            "id": "29766e7e-470d-430e-8d36-dd387242f147",
+            "label": "Upload Zip To Supabase Storage",
+            "config": {
+              "bucket": "exports",
+              "filePath": "`${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].project_id}/${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].id}.zip`",
+              "file": "condition_1.8469133c",
+              "supabaseUrl": "state.supabase_url",
+              "kbIntegrationKey": "supabase;;supabase-key-layers"
+            }
+          },
+          {
+            "id": "3769742b-4d81-49ef-9b39-3cdc4f754d10",
+            "label": "Update Row",
+            "config": {
+              "table": "exports",
+              "filter": "`id=eq.${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].id}`",
+              "data": {
+                "status": "ready",
+                "asset_url": "condition_1.29766e7e.downloadUrl",
+                "asset_path": "condition_1.29766e7e.filePath"
+              },
+              "supabaseUrl": "state.supabase_url",
+              "kbIntegrationKey": "supabase;;supabase-key-layers"
+            }
+          }
+        ],
+        "condition_244204a8_layersPack": [
+          {
+            "id": "3183a40d-847d-4829-a326-dc3181cc9f50",
+            "label": "Combine A List Of URLs Into Zip Archive",
+            "config": {
+              "urls": "cc4709a5.png_url",
+              "zipFileName": "`${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].project_id}.zip`"
+            }
+          },
+          {
+            "id": "334efeeb-671b-4d88-9ff7-31c1b0e03800",
+            "label": "Upload Zip To Supabase Storage",
+            "config": {
+              "bucket": "exports",
+              "filePath": "`${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].project_id}/${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].id}.zip`",
+              "file": "condition_244204a8.3183a40d",
+              "supabaseUrl": "state.supabase_url",
+              "kbIntegrationKey": "supabase;;supabase-key-layers"
+            }
+          },
+          {
+            "id": "1227db2b-d4a3-4192-88c5-1eaf6bc348db",
+            "label": "Update Row",
+            "config": {
+              "table": "exports",
+              "filter": "`id=eq.${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].id}`",
+              "data": {
+                "status": "ready",
+                "asset_url": "condition_244204a8.334efeeb.downloadUrl",
+                "asset_path": "condition_244204a8.334efeeb.filePath"
+              },
+              "supabaseUrl": "state.supabase_url",
+              "kbIntegrationKey": "supabase;;supabase-key-layers"
+            }
+          }
+        ],
+        "condition_57b1f785_pngs": [
+          {
+            "id": "e2ee4a2e-f69b-4b16-962b-57b088074604",
+            "label": "Get PNG URL",
+            "script": "export default function getPngUrl({ layers, options }: NodeInputs) {\n  if (!layers || layers.length === 0) {\n    throw new Error(\"No layers found\");\n  }\n  \n  let targetLayers = layers;\n  \n  if (options?.layerIds && Array.isArray(options.layerIds) && options.layerIds.length > 0) {\n    targetLayers = layers.filter(l => options.layerIds.includes(l.id));\n  }\n  \n  if (targetLayers.length === 0) {\n    throw new Error(\"No matching layers found\");\n  }\n  \n  return {\n    pngUrl: targetLayers[0].png_url,\n    layerCount: targetLayers.length\n  };\n}",
+            "config": {
+              "layers": "cc4709a5",
+              "options": "ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].options"
+            }
+          },
+          {
+            "id": "1b35a796-e528-468d-9a79-054bf5e2f6da",
+            "label": "Update Row",
+            "config": {
+              "table": "exports",
+              "filter": "`id=eq.${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].id}`",
+              "data": {
+                "status": "ready",
+                "asset_url": "condition_57b1f785.e2ee4a2e.pngUrl"
+              },
+              "supabaseUrl": "state.supabase_url",
+              "kbIntegrationKey": "supabase;;supabase-key-layers"
+            }
+          }
+        ],
+        "condition_fallback": [
+          {
+            "id": "c6e7fcec-6d29-41e4-b9a7-ffec623a7991",
+            "label": "Update Row",
+            "config": {
+              "table": "exports",
+              "filter": "`id=eq.${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].id}`",
+              "data": {
+                "status": "failed",
+                "error_message": "`Unknown export type: ${ctx?.[\"root\"]?.[\"inputs\"]?.[\"record\"].type}`"
+              },
+              "supabaseUrl": "state.supabase_url",
+              "kbIntegrationKey": "supabase;;supabase-key-layers"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "trigger": {
+    "id": "706b38bb-5b6f-46d6-a2ca-59114ca80cc6",
+    "type": "supabase-webhook",
+    "config": {
+      "table": "exports",
+      "schema": "public",
+      "events": ["insert"],
+      "projectRef": "dbluxquekhkihatcjplz"
+    }
+  },
+  "variables": {
+    "supabase_url": "https://dbluxquekhkihatcjplz.supabase.co"
+  },
+  "secrets": {
+    "supabase-key-layers": "Service role key from Supabase Settings > API"
+  }
+}

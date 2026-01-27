@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** The 3D layer viewer must feel magical
-**Current focus:** v1.0 shipped — planning next milestone
+**Current focus:** v1.3 Monetization & Settings
 
 ## Current Position
 
-Phase: 15 of 15 (Critical Bug Fixes)
+Phase: 16 of 17 (Per-Export Pricing)
 Plan: Complete
-Status: v1.2 Phase 15 complete
-Last activity: 2026-01-26 — v1.1.2 build 14 deployed to all stores
+Status: Phase 16 implemented, ready for testing
+Last activity: 2026-01-26 — Per-export consumable IAP implemented
 
-Progress: Phase 15 complete — all critical bugs fixed
+Progress: Phase 16 code complete — needs RevenueCat product setup + testing
 
 ## Shipped Builds
 
@@ -46,8 +46,8 @@ Progress: Phase 15 complete — all critical bugs fixed
 - Fixed LayersScreen to auto-fetch layers from Supabase on mount
 
 ### Open Items
-- Old `backend/` folder can be deleted
 - End-to-end testing needed
+- RevenueCat: Create `export_single` consumable product ($0.50) in dashboard
 
 ### Roadmap Evolution
 - Phase 14 added: Remove "Layers" from app bar - access via Project/Export tabs

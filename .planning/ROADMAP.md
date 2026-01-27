@@ -53,29 +53,45 @@ Build a Flutter app that transforms images into editable layer stacks via AI inf
 
 ## Current Milestone
 
-### v1.2 Features
+### 🚧 v1.3 Monetization & Settings (In Progress)
+
+**Milestone Goal:** Add per-export consumable IAP and improve settings screen with user info, subscription status, and account management
 
 | Phase | Description | Status | Completed |
 |-------|-------------|--------|-----------|
-| 15 | Critical Bug Fixes | Complete | 2026-01-26 |
-| TBD | Web platform support | Not Started | |
-| TBD | .layers export format | Not Started | |
-| TBD | Per-export pricing | Not Started | |
+| 16 | Per-Export Pricing | Not Started | - |
+| 17 | Settings Screen | Not Started | - |
 
 ---
 
-### Phase 15: Critical Bug Fixes — COMPLETE
+#### Phase 16: Per-Export Pricing
 
-**Goal:** Fix critical issues discovered in production testing
-**Completed:** 2026-01-26
-**Version:** v1.1.2 build 14
+**Goal:** Add $0.50 consumable IAP as additional monetization option alongside subscriptions
+**Depends on:** Phase 15 (RevenueCat already integrated)
+**Research:** Unlikely (RevenueCat patterns established)
+**Plans:** TBD
 
-**Issues fixed:**
-1. ✅ iOS image picker: Use XFile.readAsBytes() for sandboxing compatibility
-2. ✅ Image thumbnails: Use signed URLs instead of public URLs  
-3. ✅ RevenueCat: Pass initialized instance to ProviderScope
-4. ✅ Status badge overflow: Flexible wrapper with ellipsis
-5. ✅ Export compliance: Added ITSAppUsesNonExemptEncryption
+Plans:
+- [ ] 16-01: TBD (run /gsd-plan-phase 16 to break down)
+
+#### Phase 17: Settings Screen
+
+**Goal:** Display user info, subscription status, usage stats, and add delete account functionality
+**Depends on:** Phase 16
+**Research:** Unlikely (internal patterns)
+**Plans:** TBD
+
+Plans:
+- [ ] 17-01: TBD (run /gsd-plan-phase 17 to break down)
+
+---
+
+## Backlog
+
+| Feature | Description |
+|---------|-------------|
+| Web platform | Flutter web deployment |
+| .layers export | Custom export format |
 
 ## Domain Expertise
 
