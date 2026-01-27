@@ -5,6 +5,7 @@ import '../providers/layer_provider.dart';
 import '../providers/project_provider.dart';
 import '../providers/view_mode_provider.dart';
 import '../services/supabase_project_service.dart';
+import '../widgets/export_bottom_sheet.dart';
 import '../widgets/layer_space_view.dart';
 import '../widgets/stack_view_2d.dart';
 import '../widgets/layer_list_panel.dart';
@@ -71,12 +72,31 @@ class LayersScreen extends ConsumerWidget {
             )
           : _buildEmptyState(context),
       floatingActionButton: hasLayers
-          ? FloatingActionButton(
-              onPressed: () {
-                // Navigate to export screen
+          ? Builder(
+              builder: (context) {
+                final project = ref.watch(currentProjectProvider);
+                final selectedLayer = layerState.selectedLayerId != null
+                    ? layerState.layers.firstWhere(
+                        (l) => l.id == layerState.selectedLayerId,
+                        orElse: () => layerState.layers.first,
+                      )
+                    : null;
+
+                return FloatingActionButton(
+                  onPressed: () {
+                    if (project == null) return;
+                    ExportBottomSheet.show(
+                      context,
+                      layers: layerState.layers,
+                      projectName: project.name,
+                      projectId: project.id,
+                      selectedLayer: selectedLayer,
+                    );
+                  },
+                  tooltip: 'Export',
+                  child: const Icon(Icons.ios_share),
+                );
               },
-              tooltip: 'Export',
-              child: const Icon(Icons.ios_share),
             )
           : null,
     );

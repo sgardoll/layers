@@ -135,6 +135,93 @@ class RevenueCatService {
     }
   }
 
+  /// Get the export credits offering (consumable product).
+  ///
+  /// Returns the package for single export purchase, or null if not available.
+  /// Expects an offering named 'export_credits' with a consumable package.
+  Future<Package?> getExportPackage() async {
+    if (!_isInitialized) {
+      debugPrint('RevenueCat: getExportPackage called but not initialized');
+      return null;
+    }
+
+    try {
+      final offerings = await Purchases.getOfferings();
+      final exportOffering = offerings.getOffering('export_credits');
+
+      if (exportOffering == null) {
+        debugPrint('RevenueCat: No export_credits offering found');
+        return null;
+      }
+
+      // Get the first available package (should be the consumable)
+      if (exportOffering.availablePackages.isEmpty) {
+        debugPrint('RevenueCat: export_credits offering has no packages');
+        return null;
+      }
+
+      // Log all available packages for debugging
+      for (final p in exportOffering.availablePackages) {
+        debugPrint(
+          'RevenueCat: Available package: ${p.identifier} - '
+          '${p.storeProduct.priceString} (${p.storeProduct.identifier})',
+        );
+      }
+
+      // Prefer 'layers_export' package, fall back to first
+      final package = exportOffering.availablePackages.firstWhere(
+        (p) => p.identifier == 'layers_export',
+        orElse: () => exportOffering.availablePackages.first,
+      );
+      debugPrint(
+        'RevenueCat: Selected export package: ${package.identifier} - '
+        '${package.storeProduct.priceString}',
+      );
+      return package;
+    } catch (e) {
+      debugPrint('RevenueCat: Failed to get export package: $e');
+      return null;
+    }
+  }
+
+  /// Purchase a consumable export credit.
+  ///
+  /// Unlike subscriptions, consumables don't grant entitlements.
+  /// We just verify the purchase succeeded.
+  Future<PurchaseResult> purchaseExportCredit(Package package) async {
+    debugPrint(
+      'RevenueCat: purchaseExportCredit called for ${package.identifier}',
+    );
+
+    if (!_isInitialized) {
+      debugPrint('RevenueCat: Not initialized!');
+      return PurchaseResult.error('RevenueCat not initialized');
+    }
+
+    try {
+      debugPrint('RevenueCat: Calling Purchases.purchasePackage...');
+      final result = await Purchases.purchasePackage(package);
+      // For consumables, success means the purchase went through
+      // No entitlement check needed - it's a one-time consumable
+      debugPrint('RevenueCat: Export credit purchased successfully');
+      debugPrint(
+        'RevenueCat: CustomerInfo: ${result.customerInfo.originalAppUserId}',
+      );
+      return PurchaseResult.success(result.customerInfo);
+    } catch (e, stackTrace) {
+      debugPrint('RevenueCat: Purchase exception type: ${e.runtimeType}');
+      debugPrint('RevenueCat: Purchase exception: $e');
+      debugPrint('RevenueCat: Stack trace: $stackTrace');
+      final errorStr = e.toString();
+      if (errorStr.contains('cancelled') || errorStr.contains('canceled')) {
+        debugPrint('RevenueCat: Purchase was cancelled');
+        return PurchaseResult.cancelled();
+      }
+      debugPrint('RevenueCat: Export credit purchase failed: $e');
+      return PurchaseResult.error('Purchase failed: $e');
+    }
+  }
+
   /// Log in a user (link purchases to user ID).
   Future<void> logIn(String userId) async {
     if (!_isInitialized) return;

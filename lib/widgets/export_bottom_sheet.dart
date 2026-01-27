@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/layer.dart';
+import '../providers/entitlement_provider.dart';
 import '../services/supabase_export_service.dart';
+import 'export_purchase_sheet.dart';
 
 class ExportBottomSheet extends ConsumerStatefulWidget {
   final List<Layer> layers;
@@ -55,7 +57,52 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
     super.dispose();
   }
 
+  // TODO: Remove before release - forces purchase sheet for testing
+  static const _debugForcePurchaseSheet = false;
+  // TODO: Remove before release - skips payment gate entirely for testing exports
+  static const _debugSkipPaymentGate = false;
+
   Future<void> _startExport(ExportType type) async {
+    // Debug: skip payment gate entirely for testing export workflow
+    if (_debugSkipPaymentGate) {
+      debugPrint('DEBUG: Skipping payment gate for export testing');
+    } else {
+      // Check if user has Pro entitlement
+      final revenueCat = ref.read(revenueCatServiceProvider);
+
+      bool isPro = false;
+      try {
+        isPro = await revenueCat.hasProEntitlement();
+      } catch (e) {
+        // RevenueCat error - log and treat as non-Pro (will show purchase option)
+        debugPrint('RevenueCat entitlement check failed: $e');
+      }
+
+      // Debug override for testing purchase flow
+      if (_debugForcePurchaseSheet) {
+        isPro = false;
+      }
+
+      if (!isPro) {
+        // Show purchase sheet for non-Pro users
+        if (!mounted) return;
+
+        bool purchased = false;
+        try {
+          purchased = await ExportPurchaseSheet.show(
+            context,
+            revenueCatService: revenueCat,
+          );
+        } catch (e) {
+          debugPrint('Purchase sheet error: $e');
+          _showSnackBar('Could not load purchase options');
+          return;
+        }
+
+        if (!purchased || !mounted) return;
+      }
+    }
+
     setState(() {
       _isExporting = true;
       _statusMessage = 'Starting export...';
@@ -189,7 +236,7 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
               icon: Icons.image_outlined,
               title: 'Single Layer (PNG)',
               subtitle: widget.selectedLayer != null
-                  ? 'Layer ${widget.selectedLayer!.zIndex}'
+                  ? 'Layer ${widget.selectedLayer!.zIndex + 1}'
                   : 'Select a layer first',
               enabled: widget.selectedLayer != null,
               onTap: () => _startExport(ExportType.pngs),

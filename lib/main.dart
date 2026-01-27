@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/supabase_client.dart';
 import 'providers/entitlement_provider.dart';
+import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
 import 'services/revenuecat_service.dart';
 
@@ -31,6 +32,7 @@ class LayersApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'Layers',
@@ -49,7 +51,7 @@ class LayersApp extends ConsumerWidget {
         ),
         useMaterial3: true,
       ),
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
       routerConfig: router,
     );
   }
