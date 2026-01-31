@@ -102,8 +102,8 @@ Plans:
 
 **Goal:** Address Mac App Store Review feedback for multiple guidelines
 **Depends on:** Phase 15.2
-**Research:** Needed - app icon design, entitlements review
-**Plans:** TBD
+**Research:** Not needed - straightforward fixes
+**Plans:** 1 plan ready
 
 **Review Feedback:**
 
@@ -117,12 +117,12 @@ Plans:
 - Requires Developer Reject and new binary if removing
 
 **Guideline 3.1.2 - Business/Payments/Subscriptions:**
-- Missing subscription information in purchase flow (same as iOS)
-- Missing Terms of Use (EULA) link
-- Missing privacy policy link
+- Missing subscription information in purchase flow ✅ (handled in 15.2)
+- Missing Terms of Use (EULA) link ✅ (handled in 15.2)
+- Missing privacy policy link ✅ (handled in 15.2)
 
 Plans:
-- [ ] 15.3-01: TBD (run /gsd-plan-phase 15.3 to break down)
+- [x] 15.3-01: Remove unused entitlements and redesign app icon
 
 ---
 

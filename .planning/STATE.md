@@ -13,7 +13,11 @@ Phase: 15.2 (App Store Review Compliance)
 Plan: 15.2-01 complete
 Status: Phase complete - Legal documents and links implemented
 
-Last activity: 2026-02-01 — Completed 15.2-01: Privacy Policy, Terms of Use, and legal links in purchase flows
+Phase: 15.3 (Mac App Store Compliance)
+Plan: 15.3-01 created
+Status: Ready to execute - Icon redesign and entitlements fix
+
+Last activity: 2026-02-01 — Created 15.3-01: Mac App Store compliance (entitlements + icon)
 
 Progress: ████████░░ 80% (8/10 plans complete across phases)
 
