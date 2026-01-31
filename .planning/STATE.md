@@ -12,7 +12,12 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 Phase: 15.1 (Anonymous RLS Fix)
 Plan: 15.1-01-PLAN.md created
 Status: Ready to execute
-Last activity: 2026-02-01 — Created plan for anonymous user RLS fix
+
+Phase: 15.2 (App Store Review Compliance)
+Plan: 15.2-01-PLAN.md created
+Status: Ready to execute
+
+Last activity: 2026-02-01 — Created plan for App Store compliance (legal links, privacy policy, EULA)
 
 Progress: Plan created, ready to fix Supabase RLS for anonymous project creation
 
@@ -55,6 +60,8 @@ Progress: Plan created, ready to fix Supabase RLS for anonymous project creation
 ### Roadmap Evolution
 - Phase 14 added: Remove "Layers" from app bar - access via Project/Export tabs
 - Phase 15 complete: Critical Bug Fixes - all issues resolved
+- Phase 15.2 added: App Store Review Compliance (iOS subscriptions/EULA)
+- Phase 15.3 added: Mac App Store Compliance (icon, entitlements, subscriptions)
 
 ### Phase 15 Fixes (2026-01-26)
 - iOS image picker: Use XFile.readAsBytes() for sandboxing compatibility

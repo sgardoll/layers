@@ -60,6 +60,8 @@ Build a Flutter app that transforms images into editable layer stacks via AI inf
 | Phase | Description | Status | Completed |
 |-------|-------------|--------|-----------|
 | 15.1 | Anonymous RLS Fix | Planned | - |
+| 15.2 | App Store Review Compliance | Not Started | - |
+| 15.3 | Mac App Store Compliance | Not Started | - |
 
 #### Phase 15.1: Anonymous RLS Fix
 
@@ -70,6 +72,57 @@ Build a Flutter app that transforms images into editable layer stacks via AI inf
 
 Plans:
 - [x] 15.1-01: Update RLS migration and add storage policies
+
+#### Phase 15.2: App Store Review Compliance
+
+**Goal:** Address App Store Review feedback for Guideline 3.1.2 - Subscriptions compliance
+**Depends on:** Phase 15.1
+**Research:** Not needed - using url_launcher approach
+**Plans:** 1 plan ready
+
+**Review Feedback:**
+- Missing required subscription information in purchase flow
+- Missing Terms of Use (EULA) link in App Store metadata
+- Missing privacy policy link in App Store metadata
+
+**Required in app:**
+- Title of auto-renewing subscription ✅
+- Length of subscription ✅
+- Price of subscription (and per unit if appropriate) ✅
+- Functional links to privacy policy and Terms of Use (EULA) - **To implement**
+
+**Required in metadata:**
+- Privacy policy link in Privacy Policy field - **Manual**
+- Terms of Use (EULA) in App Description or EULA field - **Manual**
+
+Plans:
+- [x] 15.2-01: Add legal links and documents for App Store compliance
+
+#### Phase 15.3: Mac App Store Compliance
+
+**Goal:** Address Mac App Store Review feedback for multiple guidelines
+**Depends on:** Phase 15.2
+**Research:** Needed - app icon design, entitlements review
+**Plans:** TBD
+
+**Review Feedback:**
+
+**Guideline 4.3 - Design (Spam):**
+- App icon is identical to other apps in the App Store
+- Must revise to ensure uniqueness
+
+**Guideline 2.4.5(i) - Performance (Entitlements):**
+- Unused entitlement: `com.apple.security.files.downloads.read-write`
+- Must explain usage or remove from entitlements
+- Requires Developer Reject and new binary if removing
+
+**Guideline 3.1.2 - Business/Payments/Subscriptions:**
+- Missing subscription information in purchase flow (same as iOS)
+- Missing Terms of Use (EULA) link
+- Missing privacy policy link
+
+Plans:
+- [ ] 15.3-01: TBD (run /gsd-plan-phase 15.3 to break down)
 
 ---
 
