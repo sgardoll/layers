@@ -9,17 +9,17 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 ## Current Position
 
+Phase: 15.1 (Anonymous RLS Fix)
+Plan: 15.1-01-PLAN.md created
+Status: Ready to execute
+
 Phase: 15.2 (App Store Review Compliance)
-Plan: 15.2-01 complete
-Status: Phase complete - Legal documents and links implemented
+Plan: 15.2-01-PLAN.md created
+Status: Ready to execute
 
-Phase: 15.3 (Mac App Store Compliance)
-Plan: 15.3-01 complete
-Status: Phase complete - Unused entitlement removed, new app icons deployed
+Last activity: 2026-02-01 — Quick fix: Reset entitlement state on logout (fixes Pro status persistence bug)
 
-Last activity: 2026-02-01 — Completed 15.3-01: Mac App Store compliance - entitlement fix and new app icons
-
-Progress: ██████████ 100% (9/9 plans complete - Milestone v1.2.1 ready for submission)
+Progress: Quick task complete - entitlement state now resets properly on logout
 
 ## Shipped Builds
 
@@ -45,14 +45,10 @@ Progress: ██████████ 100% (9/9 plans complete - Milestone v1
 - fal.ai BiRefNet for AI layer extraction (via Wavespeed)
 - Email auth with RevenueCat user linking
 - Theme colors from app icon (#1C39EC, #00A9FE)
-- Legal documents hosted at https://layers-app.com (privacy-policy.html, terms-of-use.html)
-- Legal links open in external browser with app-themed styling
 
 ### Completed This Session
 - BuildShip workflow fully implemented (triggers on project insert, extracts layers, uploads to storage)
 - Fixed LayersScreen to auto-fetch layers from Supabase on mount
-- **Phase 15.2-01 complete**: Privacy Policy, Terms of Use (EULA), legal links in paywall and export sheet
-- **Phase 15.3-01 complete**: Removed unused macOS entitlement, updated app icons for iOS/Android/macOS
 
 ### Open Items
 - End-to-end testing needed
@@ -73,6 +69,12 @@ Progress: ██████████ 100% (9/9 plans complete - Milestone v1
 - RevenueCat: Pass initialized instance to ProviderScope
 - Status badge overflow: Flexible wrapper with ellipsis
 - Export compliance: Added ITSAppUsesNonExemptEncryption to Info.plist
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit |
+|---|-------------|------|--------|
+| 001 | Fix entitlement state persistence on logout | 2026-02-01 | 1f6210b |
 
 ### Blockers
 None
