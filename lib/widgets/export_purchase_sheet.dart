@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../services/revenuecat_service.dart';
 
@@ -212,6 +214,11 @@ class _ExportPurchaseSheetState extends State<ExportPurchaseSheet> {
                 onPressed: _isPurchasing ? null : widget.onCancel,
                 child: const Text('Cancel'),
               ),
+
+              const SizedBox(height: 16),
+
+              // Legal links
+              _buildLegalLinks(context),
             ] else ...[
               // Error state
               Icon(
@@ -236,6 +243,54 @@ class _ExportPurchaseSheetState extends State<ExportPurchaseSheet> {
         ),
       ),
     );
+  }
+
+  Widget _buildLegalLinks(BuildContext context) {
+    final theme = Theme.of(context);
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+        children: [
+          const TextSpan(text: 'By purchasing, you agree to our '),
+          TextSpan(
+            text: 'Terms of Use',
+            style: TextStyle(
+              color: theme.colorScheme.primary,
+              decoration: TextDecoration.underline,
+              fontWeight: FontWeight.w500,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () => _launchUrl('https://layers-app.com/terms-of-use'),
+          ),
+          const TextSpan(text: ' and '),
+          TextSpan(
+            text: 'Privacy Policy',
+            style: TextStyle(
+              color: theme.colorScheme.primary,
+              decoration: TextDecoration.underline,
+              fontWeight: FontWeight.w500,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () =>
+                  _launchUrl('https://layers-app.com/privacy-policy'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not open $url')));
+      }
+    }
   }
 }
 
