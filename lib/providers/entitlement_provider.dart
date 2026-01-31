@@ -151,6 +151,11 @@ class EntitlementNotifier extends StateNotifier<EntitlementState> {
       return false;
     }
   }
+
+  /// Reset entitlement state (called on logout)
+  void reset() {
+    state = const EntitlementState(isLoading: false);
+  }
 }
 
 /// Simple provider to check if user can create projects

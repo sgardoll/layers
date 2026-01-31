@@ -402,6 +402,8 @@ class _AccountActionsSection extends ConsumerWidget {
               await ref.read(authStateProvider.notifier).signOut();
               // RevenueCat logout
               await ref.read(revenueCatServiceProvider).logOut();
+              // Reset entitlement state
+              ref.read(entitlementProvider.notifier).reset();
             },
             child: const Text('Sign Out'),
           ),
@@ -479,6 +481,8 @@ class _AccountActionsSection extends ConsumerWidget {
       // Sign out locally
       await ref.read(authStateProvider.notifier).signOut();
       await ref.read(revenueCatServiceProvider).logOut();
+      // Reset entitlement state
+      ref.read(entitlementProvider.notifier).reset();
 
       if (context.mounted) {
         Navigator.of(context).pop(); // Close loading
