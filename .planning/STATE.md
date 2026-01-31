@@ -49,6 +49,9 @@ Progress: Plan created, ready to fix Supabase RLS for anonymous project creation
 - End-to-end testing needed
 - RevenueCat: Create `export_single` consumable product ($0.50) in dashboard
 
+### Pending Todos
+- Fix missing `delete_user_account` RPC function in Supabase (see .planning/todos/pending/)
+
 ### Roadmap Evolution
 - Phase 14 added: Remove "Layers" from app bar - access via Project/Export tabs
 - Phase 15 complete: Critical Bug Fixes - all issues resolved
