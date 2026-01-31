@@ -1,11 +1,50 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+/// A Result type for handling success and failure states
+sealed class Result<T> {
+  const Result();
 
-part 'result.freezed.dart';
+  /// Creates a successful result
+  static Result<T> success<T>(T data) => Success<T>(data);
 
-@freezed
-sealed class Result<T> with _$Result<T> {
-  const factory Result.success(T data) = Success<T>;
-  const factory Result.failure(String message, [Object? error]) = Failure<T>;
+  /// Creates a failure result
+  static Result<T> failure<T>(String message, [Object? error]) => Failure<T>(message, error);
+}
+
+/// Represents a successful result containing data
+class Success<T> extends Result<T> {
+  final T data;
+  const Success(this.data);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Success<T> && runtimeType == other.runtimeType && data == other.data;
+
+  @override
+  int get hashCode => data.hashCode;
+
+  @override
+  String toString() => 'Success(data: $data)';
+}
+
+/// Represents a failure result containing an error message
+class Failure<T> extends Result<T> {
+  final String message;
+  final Object? error;
+  const Failure(this.message, [this.error]);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Failure<T> &&
+          runtimeType == other.runtimeType &&
+          message == other.message &&
+          error == other.error;
+
+  @override
+  int get hashCode => Object.hash(message, error);
+
+  @override
+  String toString() => 'Failure(message: $message, error: $error)';
 }
 
 extension ResultExtension<T> on Result<T> {

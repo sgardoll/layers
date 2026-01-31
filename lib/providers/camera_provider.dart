@@ -1,29 +1,52 @@
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'camera_provider.freezed.dart';
+@immutable
+class CameraState {
+  const CameraState({
+    this.rotationX = 0.0,
+    this.rotationY = 0.0,
+    this.zoom = 1.0,
+    this.panX = 0.0,
+    this.panY = 0.0,
+    this.layerSpacing = 80.0,
+    this.isAnimating = false,
+  });
 
-@freezed
-class CameraState with _$CameraState {
-  const factory CameraState({
-    @Default(0.0) double rotationX,
-    @Default(0.0) double rotationY,
-    @Default(1.0) double zoom,
-    @Default(0.0) double panX,
-    @Default(0.0) double panY,
-    @Default(80.0) double layerSpacing,
-    @Default(false) bool isAnimating,
-  }) = _CameraState;
-
-  const CameraState._();
+  final double rotationX;
+  final double rotationY;
+  final double zoom;
+  final double panX;
+  final double panY;
+  final double layerSpacing;
+  final bool isAnimating;
 
   static const double minZoom = 0.5;
   static const double maxZoom = 3.0;
   static const double minRotationX = -math.pi / 3;
   static const double maxRotationX = math.pi / 3;
   static const double defaultLayerSpacing = 80.0;
+
+  CameraState copyWith({
+    double? rotationX,
+    double? rotationY,
+    double? zoom,
+    double? panX,
+    double? panY,
+    double? layerSpacing,
+    bool? isAnimating,
+  }) {
+    return CameraState(
+      rotationX: rotationX ?? this.rotationX,
+      rotationY: rotationY ?? this.rotationY,
+      zoom: zoom ?? this.zoom,
+      panX: panX ?? this.panX,
+      panY: panY ?? this.panY,
+      layerSpacing: layerSpacing ?? this.layerSpacing,
+      isAnimating: isAnimating ?? this.isAnimating,
+    );
+  }
 }
 
 class CameraNotifier extends Notifier<CameraState> {

@@ -11,6 +11,7 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+/test
 
 # IntelliJ related
 *.iml
@@ -46,3 +47,6 @@ app.*.map.json
 /android/app/release
 .env
 ios/build/
+
+.prompt_attachments
+*.hologram.dart

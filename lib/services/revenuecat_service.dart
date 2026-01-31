@@ -93,7 +93,9 @@ class RevenueCatService {
     }
 
     try {
-      final result = await Purchases.purchasePackage(package);
+      final result = await Purchases.purchase(
+        PurchaseParams.package(package),
+      );
       final customerInfo = result.customerInfo;
       final isPro =
           customerInfo.entitlements.all[_entitlementId]?.isActive ?? false;
@@ -199,8 +201,10 @@ class RevenueCatService {
     }
 
     try {
-      debugPrint('RevenueCat: Calling Purchases.purchasePackage...');
-      final result = await Purchases.purchasePackage(package);
+      debugPrint('RevenueCat: Calling Purchases.purchase(...)...');
+      final result = await Purchases.purchase(
+        PurchaseParams.package(package),
+      );
       // For consumables, success means the purchase went through
       // No entitlement check needed - it's a one-time consumable
       debugPrint('RevenueCat: Export credit purchased successfully');

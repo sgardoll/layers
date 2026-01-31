@@ -197,7 +197,7 @@ class _LayerListItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          layer.name ?? 'Layer ${layer.zIndex + 1}',
+          layer.name,
           style: TextStyle(
             color: layer.visible ? Colors.white : Colors.white54,
             fontSize: 13,
