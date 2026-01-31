@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../providers/entitlement_provider.dart';
 import '../services/revenuecat_service.dart';
@@ -158,9 +160,61 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             ),
             textAlign: TextAlign.center,
           ),
+
+          const SizedBox(height: 16),
+
+          // Legal links
+          _buildLegalLinks(context, colorScheme),
         ],
       ),
     );
+  }
+
+  Widget _buildLegalLinks(BuildContext context, ColorScheme colorScheme) {
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+        children: [
+          const TextSpan(text: 'By subscribing, you agree to our '),
+          TextSpan(
+            text: 'Terms of Use',
+            style: TextStyle(
+              color: colorScheme.primary,
+              decoration: TextDecoration.underline,
+              fontWeight: FontWeight.w500,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () => _launchUrl('https://layers-app.com/terms-of-use'),
+          ),
+          const TextSpan(text: ' and '),
+          TextSpan(
+            text: 'Privacy Policy',
+            style: TextStyle(
+              color: colorScheme.primary,
+              decoration: TextDecoration.underline,
+              fontWeight: FontWeight.w500,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () =>
+                  _launchUrl('https://layers-app.com/privacy-policy'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not open $url')));
+      }
+    }
   }
 
   Widget _buildHeader(BuildContext context, ColorScheme colorScheme) {
