@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 ## Current Position
 
-Phase: 16 of 17 (Per-Export Pricing)
-Plan: Complete
-Status: Phase 16 implemented, ready for testing
-Last activity: 2026-01-26 — Per-export consumable IAP implemented
+Phase: 15.1 (Anonymous RLS Fix)
+Plan: 15.1-01-PLAN.md created
+Status: Ready to execute
+Last activity: 2026-02-01 — Created plan for anonymous user RLS fix
 
-Progress: Phase 16 code complete — needs RevenueCat product setup + testing
+Progress: Plan created, ready to fix Supabase RLS for anonymous project creation
 
 ## Shipped Builds
 

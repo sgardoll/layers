@@ -53,7 +53,27 @@ Build a Flutter app that transforms images into editable layer stacks via AI inf
 
 ## Current Milestone
 
-### 🚧 v1.3 Monetization & Settings (In Progress)
+### 🚧 v1.2.1 Critical Bug Fix: Anonymous RLS (In Progress)
+
+**Milestone Goal:** Fix Supabase RLS policies to allow non-logged-in users to create projects
+
+| Phase | Description | Status | Completed |
+|-------|-------------|--------|-----------|
+| 15.1 | Anonymous RLS Fix | Planned | - |
+
+#### Phase 15.1: Anonymous RLS Fix
+
+**Goal:** Update RLS policies to support anonymous (non-logged-in) project creation
+**Depends on:** Phase 15 (Critical Bug Fixes baseline)
+**Research:** Not needed (schema.sql already has correct policies)
+**Plans:** 1 plan ready
+
+Plans:
+- [x] 15.1-01: Update RLS migration and add storage policies
+
+---
+
+### 🚧 v1.3 Monetization & Settings (Up Next)
 
 **Milestone Goal:** Add per-export consumable IAP and improve settings screen with user info, subscription status, and account management
 
