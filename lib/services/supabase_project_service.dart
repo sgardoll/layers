@@ -15,18 +15,22 @@ class SupabaseProjectService {
 
   SupabaseProjectService(this._client);
 
-  String get _userId => _client.auth.currentUser?.id ?? 'anonymous';
-
   Future<Result<Project>> createProject({
     required Uint8List imageBytes,
     required String fileName,
     Map<String, dynamic> params = const {},
   }) async {
     try {
+      // Ensure user is authenticated
+      final userId = _client.auth.currentUser?.id;
+      if (userId == null) {
+        return Failure('User must be authenticated to create projects');
+      }
+
       // Generate unique ID for this project's storage folder
       final uniqueId = DateTime.now().millisecondsSinceEpoch.toString();
       final ext = p.extension(fileName);
-      final storagePath = '$_userId/$uniqueId/source$ext';
+      final storagePath = '$userId/$uniqueId/source$ext';
 
       await _client.storage
           .from('source-images')
@@ -35,7 +39,7 @@ class SupabaseProjectService {
       final response = await _client
           .from('projects')
           .insert({
-            'user_id': _client.auth.currentUser?.id,
+            'user_id': userId,
             'source_image_path': storagePath,
             'params': params,
             'status': 'queued',

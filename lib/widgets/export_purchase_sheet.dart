@@ -263,7 +263,7 @@ class _ExportPurchaseSheetState extends State<ExportPurchaseSheet> {
               fontWeight: FontWeight.w500,
             ),
             recognizer: TapGestureRecognizer()
-              ..onTap = () => _launchUrl('https://layers-app.com/terms-of-use'),
+              ..onTap = () => _launchUrl('https://connectio.com.au/terms/'),
           ),
           const TextSpan(text: ' and '),
           TextSpan(
@@ -275,7 +275,7 @@ class _ExportPurchaseSheetState extends State<ExportPurchaseSheet> {
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () =>
-                  _launchUrl('https://layers-app.com/privacy-policy'),
+                  _launchUrl('https://connectio.com.au/privacy-policy/'),
           ),
         ],
       ),

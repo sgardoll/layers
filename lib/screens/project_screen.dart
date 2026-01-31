@@ -6,8 +6,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/project.dart';
 import '../providers/project_provider.dart';
 import '../providers/entitlement_provider.dart';
+import '../providers/auth_provider.dart';
 import 'layers_screen.dart';
 import 'paywall_screen.dart';
+import 'auth_screen.dart';
 
 class ProjectScreen extends ConsumerStatefulWidget {
   const ProjectScreen({super.key});
@@ -29,6 +31,18 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
   }
 
   Future<void> _pickAndCreateProject() async {
+    // Check authentication first
+    final isAuthenticated = ref.read(isAuthenticatedProvider);
+
+    if (!isAuthenticated) {
+      // Show auth screen
+      final authenticated = await Navigator.of(
+        context,
+      ).push<bool>(MaterialPageRoute(builder: (_) => const AuthScreen()));
+
+      if (authenticated != true) return; // User didn't sign in
+    }
+
     // Check if user can create more projects
     final canCreate = ref.read(canCreateProjectProvider);
 

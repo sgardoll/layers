@@ -186,7 +186,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               fontWeight: FontWeight.w500,
             ),
             recognizer: TapGestureRecognizer()
-              ..onTap = () => _launchUrl('https://layers-app.com/terms-of-use'),
+              ..onTap = () => _launchUrl('https://connectio.com.au/terms/'),
           ),
           const TextSpan(text: ' and '),
           TextSpan(
@@ -198,7 +198,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () =>
-                  _launchUrl('https://layers-app.com/privacy-policy'),
+                  _launchUrl('https://connectio.com.au/privacy-policy/'),
           ),
         ],
       ),
