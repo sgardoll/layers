@@ -14,12 +14,12 @@ Plan: 15.2-01 complete
 Status: Phase complete - Legal documents and links implemented
 
 Phase: 15.3 (Mac App Store Compliance)
-Plan: 15.3-01 created
-Status: Ready to execute - Icon redesign and entitlements fix
+Plan: 15.3-01 complete
+Status: Phase complete - Unused entitlement removed, new app icons deployed
 
-Last activity: 2026-02-01 — Created 15.3-01: Mac App Store compliance (entitlements + icon)
+Last activity: 2026-02-01 — Completed 15.3-01: Mac App Store compliance - entitlement fix and new app icons
 
-Progress: ████████░░ 80% (8/10 plans complete across phases)
+Progress: ██████████ 100% (9/9 plans complete - Milestone v1.2.1 ready for submission)
 
 ## Shipped Builds
 
@@ -52,6 +52,7 @@ Progress: ████████░░ 80% (8/10 plans complete across phases)
 - BuildShip workflow fully implemented (triggers on project insert, extracts layers, uploads to storage)
 - Fixed LayersScreen to auto-fetch layers from Supabase on mount
 - **Phase 15.2-01 complete**: Privacy Policy, Terms of Use (EULA), legal links in paywall and export sheet
+- **Phase 15.3-01 complete**: Removed unused macOS entitlement, updated app icons for iOS/Android/macOS
 
 ### Open Items
 - End-to-end testing needed

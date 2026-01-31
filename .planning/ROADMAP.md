@@ -59,9 +59,9 @@ Build a Flutter app that transforms images into editable layer stacks via AI inf
 
 | Phase | Description | Status | Completed |
 |-------|-------------|--------|-----------|
-| 15.1 | Anonymous RLS Fix | Planned | - |
-| 15.2 | App Store Review Compliance | Not Started | - |
-| 15.3 | Mac App Store Compliance | Not Started | - |
+| 15.1 | Anonymous RLS Fix | Ready | - |
+| 15.2 | App Store Review Compliance | Complete | 2026-02-01 |
+| 15.3 | Mac App Store Compliance | Complete | 2026-02-01 |
 
 #### Phase 15.1: Anonymous RLS Fix
 
