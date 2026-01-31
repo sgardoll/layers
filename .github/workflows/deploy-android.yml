@@ -1,0 +1,104 @@
+name: Deploy to Play Console
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., 1.1.3)'
+        required: true
+        type: string
+      build_number:
+        description: 'Build number (e.g., 16)'
+        required: true
+        type: string
+      track:
+        description: 'Release track'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+
+concurrency:
+  group: android-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy_android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.x'
+          channel: 'stable'
+          cache: true
+          
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Setup keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          # Decode keystore
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/keystore.jks
+          
+          # Create key.properties
+          cat > android/key.properties << EOF
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyPassword=$ANDROID_KEY_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          storeFile=keystore.jks
+          EOF
+          
+      - name: Build AAB & APK
+        run: |
+          flutter build appbundle \
+            --release \
+            --build-name=${{ github.event.inputs.version }} \
+            --build-number=${{ github.event.inputs.build_number }}
+          flutter build apk \
+            --release \
+            --build-name=${{ github.event.inputs.version }} \
+            --build-number=${{ github.event.inputs.build_number }}
+            
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-${{ github.event.inputs.version }}+${{ github.event.inputs.build_number }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+            
+      - name: Upload to Play Console
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.connectio.layers
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: ${{ github.event.inputs.track }}
+          status: completed
+          whatsNewDirectory: distribution/whatsnew
+          mappingFile: build/app/outputs/mapping/release/mapping.txt
+          
+      - name: Notify Success
+        if: success()
+        run: |
+          echo "✅ Successfully deployed Layers ${{ github.event.inputs.version }} (${{ github.event.inputs.build_number }}) to Play Console (${{ github.event.inputs.track }})"

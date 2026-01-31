@@ -1,0 +1,123 @@
+name: Deploy to TestFlight
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., 1.1.3)'
+        required: true
+        type: string
+      build_number:
+        description: 'Build number (e.g., 16)'
+        required: true
+        type: string
+
+concurrency:
+  group: ios-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy_ios:
+    runs-on: macos-14
+    timeout-minutes: 45
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.x'
+          channel: 'stable'
+          cache: true
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          
+      - name: Setup CocoaPods
+        run: |
+          cd ios
+          pod install --repo-update
+          
+      - name: Setup signing
+        env:
+          IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          IOS_KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
+        run: |
+          # Create keychain
+          security create-keychain -p "$IOS_KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$IOS_KEYCHAIN_PASSWORD" build.keychain
+          security set-keychain-settings -t 3600 -u build.keychain
+          
+          # Import certificate
+          echo "$IOS_CERTIFICATE_BASE64" | base64 -d > certificate.p12
+          security import certificate.p12 -k build.keychain -P "$IOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$IOS_KEYCHAIN_PASSWORD" build.keychain
+          
+          # Install provisioning profile
+          echo "$IOS_PROVISIONING_PROFILE_BASE64" | base64 -d > profile.mobileprovision
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+          
+      - name: Build IPA
+        run: |
+          flutter build ipa \
+            --release \
+            --build-name=${{ github.event.inputs.version }} \
+            --build-number=${{ github.event.inputs.build_number }} \
+            --export-options-plist=ios/ExportOptions.plist
+            
+      - name: Upload to TestFlight (Transporter)
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+        run: |
+          # Create API key file
+          echo "$APP_STORE_CONNECT_API_KEY_CONTENT" | base64 -d > AuthKey.p8
+          
+          # Create itmsp package for Transporter
+          ITMSP_DIR="build/ios/ipa/layers.itmsp"
+          mkdir -p "$ITMSP_DIR"
+          
+          # Copy IPA
+          cp build/ios/ipa/layers.ipa "$ITMSP_DIR/"
+          
+          # Create metadata.xml
+          cat > "$ITMSP_DIR/metadata.xml" << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <package version="software5.11" xmlns="http://apple.com/itunes/importer">
+            <software_assets apple_id="6758235126" app_platform="ios">
+              <asset type="bundle">
+                <data_file>
+                  <file_name>layers.ipa</file_name>
+                  <checksum type="md5">$(md5 -q build/ios/ipa/layers.ipa)</checksum>
+                  <size>$(stat -f%z build/ios/ipa/layers.ipa)</size>
+                </data_file>
+              </asset>
+            </software_assets>
+          </package>
+          EOF
+          
+          # Upload using Transporter (iTMSTransporter)
+          xcrun iTMSTransporter -m upload \
+            -f "$ITMSP_DIR" \
+            -k 100000 \
+            -apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
+            -apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID" \
+            -v detailed
+            
+      - name: Notify Success
+        if: success()
+        run: |
+          echo "✅ Successfully deployed Layers ${{ github.event.inputs.version }} (${{ github.event.inputs.build_number }}) to TestFlight"
