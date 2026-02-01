@@ -48,6 +48,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           
+      - name: Create .env (required by pubspec assets)
+        env:
+          DOTENV: ${{ secrets.DOTENV }}
+        run: |
+          printf "%s" "$DOTENV" > .env
+
       - name: Install dependencies
         run: flutter pub get
         

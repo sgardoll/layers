@@ -20,6 +20,13 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Create .env (required by pubspec assets)
+        env:
+          DOTENV: ${{ secrets.DOTENV }}
+        run: |
+          # For PRs from forks, secrets aren't available; create an empty file so asset bundling still works.
+          printf "%s" "${DOTENV:-}" > .env
+
       - name: Pub get
         run: flutter pub get
 
