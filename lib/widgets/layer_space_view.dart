@@ -115,8 +115,10 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
 
     // Sort by zIndex ascending so back layers are painted first in Stack
     // (Stack paints children in order: first child painted first, last child painted last)
-    final sortedLayers = [...widget.layers]
-      ..sort((a, b) => a.zIndex.compareTo(b.zIndex));
+    // Filter out hidden layers - they should not appear in 3D view
+    final sortedLayers =
+        [...widget.layers].where((layer) => layer.visible).toList()
+          ..sort((a, b) => a.zIndex.compareTo(b.zIndex));
 
     return SizedBox(
       width: 400,
