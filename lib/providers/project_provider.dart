@@ -146,6 +146,17 @@ class ProjectListNotifier extends StateNotifier<ProjectListState> {
     _subscriptions.clear();
     super.dispose();
   }
+
+  /// Reset all state (called on logout)
+  void reset() {
+    // Cancel all subscriptions
+    for (final sub in _subscriptions.values) {
+      sub.cancel();
+    }
+    _subscriptions.clear();
+    // Reset to initial state
+    state = const ProjectListState();
+  }
 }
 
 final projectListProvider =

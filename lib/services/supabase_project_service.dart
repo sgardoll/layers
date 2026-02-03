@@ -21,11 +21,9 @@ class SupabaseProjectService {
     Map<String, dynamic> params = const {},
   }) async {
     try {
-      // Ensure user is authenticated
-      final userId = _client.auth.currentUser?.id;
-      if (userId == null) {
-        return Failure('User must be authenticated to create projects');
-      }
+      // Support anonymous users: use 'anonymous' as folder name when not logged in
+      // RLS policies allow user_id IS NULL for anonymous project creation
+      final userId = _client.auth.currentUser?.id ?? 'anonymous';
 
       // Generate unique ID for this project's storage folder
       final uniqueId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -39,7 +37,8 @@ class SupabaseProjectService {
       final response = await _client
           .from('projects')
           .insert({
-            'user_id': userId,
+            // NULL user_id for anonymous users (supported by RLS policies with OR user_id IS NULL)
+            'user_id': _client.auth.currentUser?.id,
             'source_image_path': storagePath,
             'params': params,
             'status': 'queued',

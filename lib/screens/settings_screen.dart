@@ -6,6 +6,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../core/supabase_client.dart';
 import '../providers/auth_provider.dart';
 import '../providers/entitlement_provider.dart';
+import '../providers/layer_provider.dart';
+import '../providers/project_provider.dart';
 import '../providers/theme_provider.dart';
 import 'paywall_screen.dart';
 
@@ -388,22 +390,24 @@ class _AccountActionsSection extends ConsumerWidget {
   void _confirmSignOut(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Sign Out'),
         content: const Text('Are you sure you want to sign out?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () async {
-              Navigator.of(context).pop();
+              Navigator.of(dialogContext).pop();
+              // Perform full logout - resets all user state
               await ref.read(authStateProvider.notifier).signOut();
-              // RevenueCat logout
               await ref.read(revenueCatServiceProvider).logOut();
-              // Reset entitlement state
               ref.read(entitlementProvider.notifier).reset();
+              ref.read(projectListProvider.notifier).reset();
+              ref.read(layerProvider.notifier).reset();
+              ref.read(currentProjectProvider.notifier).state = null;
             },
             child: const Text('Sign Out'),
           ),
@@ -459,16 +463,11 @@ class _AccountActionsSection extends ConsumerWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (loadingContext) => const Center(child: CircularProgressIndicator()),
     );
 
     try {
-      // TODO: Create Supabase RPC 'delete_user_account' that:
-      // 1. Deletes all user's projects from project_layers table
-      // 2. Deletes all user's exports from exports table
-      // 3. Deletes user's storage files
-      // 4. Deletes auth user
-      // For now, we just sign out - full deletion requires backend function
+      // Attempt to delete user account via RPC
       final client = ref.read(supabaseClientProvider);
 
       try {
@@ -478,11 +477,13 @@ class _AccountActionsSection extends ConsumerWidget {
         debugPrint('delete_user_account RPC not available: $e');
       }
 
-      // Sign out locally
+      // Perform full logout - resets all user state
       await ref.read(authStateProvider.notifier).signOut();
       await ref.read(revenueCatServiceProvider).logOut();
-      // Reset entitlement state
       ref.read(entitlementProvider.notifier).reset();
+      ref.read(projectListProvider.notifier).reset();
+      ref.read(layerProvider.notifier).reset();
+      ref.read(currentProjectProvider.notifier).state = null;
 
       if (context.mounted) {
         Navigator.of(context).pop(); // Close loading

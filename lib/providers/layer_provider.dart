@@ -115,6 +115,11 @@ class LayerNotifier extends Notifier<LayerState> {
     final wasSelected = state.selectedLayerId == layerId;
     state = state.copyWith(layers: updated, clearSelection: wasSelected);
   }
+
+  /// Reset all state (called on logout)
+  void reset() {
+    state = const LayerState();
+  }
 }
 
 final layerProvider = NotifierProvider<LayerNotifier, LayerState>(
