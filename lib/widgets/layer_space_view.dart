@@ -136,7 +136,7 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
                     camera.panX,
                     camera.panY,
                     (sortedLayers[i].zIndex - sortedLayers.length / 2) *
-                        -camera.layerSpacing,
+                        camera.layerSpacing,
                   ),
                 alignment: Alignment.center,
                 child: LayerCard3D(
