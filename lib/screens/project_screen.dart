@@ -123,6 +123,9 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
   }
 
   Widget _buildBody(BuildContext context, ProjectListState state) {
+    // Check if user is authenticated
+    final isAuthenticated = ref.watch(isAuthenticatedProvider);
+
     switch (state.status) {
       case ProjectListStatus.initial:
       case ProjectListStatus.loading:
@@ -130,10 +133,63 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
       case ProjectListStatus.error:
         return _buildErrorState(context, state.errorMessage ?? 'Unknown error');
       case ProjectListStatus.loaded:
+        // Show anonymous empty state for unauthenticated users
+        if (!isAuthenticated && state.projects.isEmpty) {
+          return _buildAnonymousEmptyState(context);
+        }
         return state.projects.isEmpty
             ? _buildEmptyState(context)
             : _buildProjectGrid(context, state.projects);
     }
+  }
+
+  Widget _buildAnonymousEmptyState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.person_outline,
+            size: 80,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Sign in to view your projects',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Create an account to save and access your projects across devices',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          FilledButton.icon(
+            onPressed: () async {
+              final authenticated = await Navigator.of(context).push<bool>(
+                MaterialPageRoute(builder: (_) => const AuthScreen()),
+              );
+              if (authenticated == true) {
+                // Auth screen will trigger project load via listener
+              }
+            },
+            icon: const Icon(Icons.login),
+            label: const Text('Sign In'),
+          ),
+          const SizedBox(height: 16),
+          TextButton(
+            onPressed: () async {
+              // Allow anonymous users to create projects
+              await _pickAndCreateProject();
+            },
+            child: const Text('Continue as Guest'),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildEmptyState(BuildContext context) {

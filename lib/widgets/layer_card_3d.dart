@@ -105,7 +105,7 @@ class LayerCard3D extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      layer.name ?? 'Layer ${index + 1}',
+                      layer.name ?? 'Layer ${totalLayers - index}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,

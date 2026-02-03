@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/result.dart';
 import '../models/project.dart';
 import '../services/supabase_project_service.dart'
     hide supabaseProjectServiceProvider;
+import 'auth_provider.dart';
 import 'supabase_providers.dart';
 
 /// State for the project list
@@ -38,9 +40,39 @@ class ProjectListState {
 
 class ProjectListNotifier extends StateNotifier<ProjectListState> {
   final SupabaseProjectService _service;
+  final Ref? _ref;
   final Map<String, StreamSubscription<Project>> _subscriptions = {};
+  StreamSubscription? _authSubscription;
 
-  ProjectListNotifier(this._service) : super(const ProjectListState());
+  ProjectListNotifier(this._service, {Ref? ref})
+    : _ref = ref,
+      super(const ProjectListState()) {
+    _init();
+  }
+
+  void _init() {
+    // Listen to auth state changes to auto-load projects
+    _ref?.listen(currentUserProvider, (previous, current) {
+      if (previous == null && current != null) {
+        // User just logged in - load their projects
+        debugPrint('ProjectListNotifier: User logged in, loading projects');
+        loadProjects();
+      } else if (previous != null && current == null) {
+        // User just logged out - clear projects
+        debugPrint('ProjectListNotifier: User logged out, clearing projects');
+        reset();
+      }
+    });
+
+    // Also load on initial creation if already authenticated
+    final user = _ref?.read(currentUserProvider);
+    if (user != null) {
+      debugPrint(
+        'ProjectListNotifier: User already authenticated, loading projects',
+      );
+      loadProjects();
+    }
+  }
 
   Future<void> loadProjects() async {
     state = state.copyWith(status: ProjectListStatus.loading);
@@ -140,6 +172,7 @@ class ProjectListNotifier extends StateNotifier<ProjectListState> {
 
   @override
   void dispose() {
+    _authSubscription?.cancel();
     for (final sub in _subscriptions.values) {
       sub.cancel();
     }
@@ -162,7 +195,7 @@ class ProjectListNotifier extends StateNotifier<ProjectListState> {
 final projectListProvider =
     StateNotifierProvider<ProjectListNotifier, ProjectListState>((ref) {
       final service = ref.watch(supabaseProjectServiceProvider);
-      return ProjectListNotifier(service);
+      return ProjectListNotifier(service, ref: ref);
     });
 
 /// Currently selected project for viewing/editing
