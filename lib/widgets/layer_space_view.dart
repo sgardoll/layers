@@ -83,6 +83,7 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
             child: Transform(
               transform: _buildCameraMatrix(camera),
               alignment: Alignment.center,
+              transformHitTests: true,
               child: Transform.scale(
                 scale: camera.zoom,
                 child: _buildLayerStackWithZOffset(camera),
@@ -139,6 +140,7 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
                         camera.layerSpacing,
                   ),
                 alignment: Alignment.center,
+                transformHitTests: true,
                 child: LayerCard3D(
                   layer: sortedLayers[i],
                   index: i,
