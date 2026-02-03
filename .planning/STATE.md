@@ -17,9 +17,9 @@ Phase: 15.2 (App Store Review Compliance)
 Plan: 15.2-01-PLAN.md created
 Status: Ready to execute
 
-Last activity: 2026-02-01 — Quick fix: Reset entitlement state on logout (fixes Pro status persistence bug)
+Last activity: 2026-02-04 — Quick fix: Fixed Dart syntax errors in 3D layer viewer (lib/widgets/layer_space_view.dart)
 
-Progress: Quick task complete - entitlement state now resets properly on logout
+Progress: Quick task 004 complete - 3D layer viewer now compiles successfully
 
 ## Shipped Builds
 
@@ -75,6 +75,7 @@ Progress: Quick task complete - entitlement state now resets properly on logout
 | # | Description | Date | Commit |
 |---|-------------|------|--------|
 | 001 | Fix entitlement state persistence on logout | 2026-02-01 | 1f6210b |
+| 004 | Fix Dart syntax errors in 3D layer viewer | 2026-02-04 | 67f3377 |
 
 ### Blockers
 None
