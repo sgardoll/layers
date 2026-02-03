@@ -79,26 +79,13 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
         child: Container(
           color: const Color(0xFF1a1a2e),
           child: Center(
-            // Apply camera transform first (rotate/zoom), then Z-translation
-            // Z-translation must be OUTSIDE scale to work with fake 3D layering
-                child: Transform(
+            // Apply camera transform first (rotate/zoom)
+            child: Transform(
               transform: _buildCameraMatrix(camera),
               alignment: Alignment.center,
               child: Transform.scale(
                 scale: camera.zoom,
-                child: Transform.translate(
-                  // Z-translation at this level affects all layers equally
-                  // Higher zIndex (foreground) should have negative Z-offset (closer to camera)
-                  // Lower zIndex (background) should have positive Z-offset (further from camera)
-                  // We use negative of (layer.zIndex - center) * spacing
-                  // This inverts because we sort ascending (Layer 0=back-most)
-                  offset: Offset(
-                    camera.panX,
-                    camera.panY,
-                    (layer.zIndex - sortedLayers.length / 2) * -camera.layerSpacing,
-                  ),
-                  child: _buildLayerStackWithZOffset(camera),
-                ),
+                child: _buildLayerStackWithZOffset(camera),
               ),
             ),
           ),
@@ -141,19 +128,15 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
             SizedBox(
               width: 400,
               height: 400,
-                child: Transform.translate(
-                // Z-translation at this level affects all layers equally
-                // Higher zIndex (foreground) should have negative Z-offset (closer to camera)
-                // Lower zIndex (background) should have positive Z-offset (further from camera)
-                // We use negative of (layer.zIndex - center) * spacing
-                // This inverts because we sort ascending (Layer 0=back-most)
-                // Calculate Z-offset as intermediate variable to avoid LSP confusion
-                final zOffset = (layer.zIndex - sortedLayers.length / 2) * -camera.layerSpacing;
-                offset: Offset(
-                  camera.panX,
-                  camera.panY,
-                  zOffset,
-                ),
+              child: Transform(
+                transform: Matrix4.identity()
+                  ..translate(
+                    camera.panX,
+                    camera.panY,
+                    (sortedLayers[i].zIndex - sortedLayers.length / 2) *
+                        -camera.layerSpacing,
+                  ),
+                alignment: Alignment.center,
                 child: LayerCard3D(
                   layer: sortedLayers[i],
                   index: i,
