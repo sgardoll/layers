@@ -93,12 +93,28 @@ class LayerListPanel extends ConsumerWidget {
   }
 
   Widget _buildLayerList(LayerState layerState, LayerNotifier notifier) {
+    // Sort layers by zIndex descending so highest Z (front-most) appears at top
+    // This matches design tool conventions (Photoshop, Figma, etc.)
+    final sortedLayers = [...layerState.layers]
+      ..sort((a, b) => b.zIndex.compareTo(a.zIndex));
+
     return ReorderableListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: layerState.layers.length,
-      onReorder: notifier.reorderLayers,
+      itemCount: sortedLayers.length,
+      onReorder: (oldIndex, newIndex) {
+        // Convert visual indices to actual layer indices in the state
+        final actualOldIndex = layerState.layers.indexWhere(
+          (l) => l.id == sortedLayers[oldIndex].id,
+        );
+        final actualNewIndex = layerState.layers.indexWhere(
+          (l) =>
+              l.id ==
+              sortedLayers[newIndex > oldIndex ? newIndex - 1 : newIndex].id,
+        );
+        notifier.reorderLayers(actualOldIndex, actualNewIndex);
+      },
       itemBuilder: (context, index) {
-        final layer = layerState.layers[index];
+        final layer = sortedLayers[index];
         final isSelected = layer.id == layerState.selectedLayerId;
 
         return _LayerListItem(
