@@ -52,6 +52,7 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
           if (_lastFocalPoint == null) return;
 
           final delta = details.focalPoint - _lastFocalPoint!;
+          _lastFocalPoint = details.focalPoint; // Update for next frame
 
           if (details.pointerCount == 2) {
             cameraNotifier.setZoom(_lastScale! * details.scale);
@@ -133,11 +134,12 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
               height: 400,
               child: Transform(
                 transform: Matrix4.identity()
+                  ..setEntry(3, 2, 0.001) // perspective for 3D depth
                   ..translate(
                     camera.panX,
                     camera.panY,
                     (sortedLayers[i].zIndex - sortedLayers.length / 2) *
-                        camera.layerSpacing,
+                        -camera.layerSpacing,
                   ),
                 alignment: Alignment.center,
                 transformHitTests: true,
