@@ -10,25 +10,27 @@
 
 ## Resolved Issues
 
-### UAT-001: Layer visibility/order incorrect in 3D viewer ✓ FIXED
+### UAT-001: Layer visibility/order incorrect in list panel ✓ FIXED
 
 **Discovered:** 2026-02-03
-**Resolved:** 2026-02-03
+**Resolved:** 2026-02-03 (corrected 2026-02-03)
 **Severity:** Major
-**Feature:** 3D Layer Viewer
-**Fix Commit:** [pending]
+**Feature:** Layer List Panel (right sidebar)
+**Fix Commit:** 85b5fc3
 
-**Problem:** The schematic outline of layers showed correct z-order (Layer 1 in front of Layer 3), but the actual image rendering showed Layer 1 BEHIND Layer 3. Additionally, hidden layers displayed a dark semi-transparent haze.
+**Problem:** The layer list panel showed layers in wrong order — Layer 1 (z:0, background) appeared at the TOP of the list, while Layer 4 (z:3, front-most) appeared at the BOTTOM. This is inverted compared to standard design tools (Photoshop, Figma) where the front-most layer appears at the top of the list.
+
+**Root Cause:** The `LayerListPanel` displayed layers in their raw state order without sorting by zIndex. In design tools, the layer at the TOP of the list should be the FRONT-MOST layer (highest z-index).
 
 **Solution:** 
-- Fixed layer sorting in `layer_space_view.dart` to use descending zIndex order
-- Reversed the iteration order so front layers (higher zIndex) are painted last in the Stack
-- Reduced hidden layer overlay opacity from 0.7 to 0.4 for clearer visual indication
-- Changed icon color from `Colors.white54` to `Colors.white70` for better visibility
+- Modified `layer_list_panel.dart` to sort layers by zIndex DESCENDING before displaying
+- Highest zIndex (front-most) now appears at the TOP of the list
+- Fixed reorder logic to correctly map visual list indices to actual layer indices
+- 3D viewer rendering reverted to original ascending sort (back-to-front for Stack painting)
 
 **Files Modified:**
-- `lib/widgets/layer_space_view.dart`
-- `lib/widgets/layer_card_3d.dart`
+- `lib/widgets/layer_list_panel.dart` — sorts by zIndex descending, fixed reorder mapping
+- `lib/widgets/layer_space_view.dart` — reverted to ascending sort (correct for 3D rendering)
 
 ### UAT-002: Download link fails on Android ✓ FIXED
 

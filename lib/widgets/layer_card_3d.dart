@@ -26,7 +26,9 @@ class LayerCard3D extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final zOffset = (index - totalLayers / 2) * spacing;
+    // Use the layer's actual zIndex for 3D positioning, not the list index
+    // This ensures consistent 3D depth regardless of how layers are sorted
+    final zOffset = (layer.zIndex - totalLayers / 2) * spacing;
 
     // Perspective must be on same Transform as Z-translation for 3D to work
     final transform = Matrix4.identity()
