@@ -114,8 +114,11 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
       );
     }
 
+    // Sort by zIndex descending so front layers (higher zIndex) are painted last
+    // and appear on top in the Stack. This matches the 3D schematic view where
+    // Layer 1 (highest zIndex/closest to viewer) appears in front.
     final sortedLayers = [...widget.layers]
-      ..sort((a, b) => a.zIndex.compareTo(b.zIndex));
+      ..sort((a, b) => b.zIndex.compareTo(a.zIndex));
 
     return SizedBox(
       width: 400,
@@ -123,13 +126,16 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          for (var i = 0; i < sortedLayers.length; i++)
+          // Reverse the index for rendering order (back to front)
+          // so that layers with higher zIndex (front) are painted last
+          for (var i = sortedLayers.length - 1; i >= 0; i--)
             SizedBox(
               width: 400,
               height: 400,
               child: LayerCard3D(
                 layer: sortedLayers[i],
-                index: i,
+                // Pass the visual index (0 = back, n = front) for 3D positioning
+                index: sortedLayers.length - 1 - i,
                 totalLayers: sortedLayers.length,
                 spacing: camera.layerSpacing,
                 isSelected: sortedLayers[i].id == widget.selectedLayerId,

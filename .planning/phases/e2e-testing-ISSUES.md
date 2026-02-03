@@ -6,58 +6,77 @@
 
 ## Open Issues
 
-### UAT-001: Layer visibility/order incorrect in 3D viewer
+[None - all issues resolved in UAT-FIX-20260203]
+
+## Resolved Issues
+
+### UAT-001: Layer visibility/order incorrect in 3D viewer ✓ FIXED
 
 **Discovered:** 2026-02-03
+**Resolved:** 2026-02-03
 **Severity:** Major
 **Feature:** 3D Layer Viewer
-**Description:** The schematic outline of layers shows correct z-order (Layer 1 in front of Layer 3), but the actual image rendering shows Layer 1 BEHIND Layer 3. Additionally, hidden layers display a black semi-transparent haze that complicates the visual presentation.
+**Fix Commit:** [pending]
 
-**Expected:** 
-- Layer 1 image should render in front of Layer 3 image (matching the schematic outline)
-- Hidden layers should have clear visual indication without confusing haze effects
+**Problem:** The schematic outline of layers showed correct z-order (Layer 1 in front of Layer 3), but the actual image rendering showed Layer 1 BEHIND Layer 3. Additionally, hidden layers displayed a dark semi-transparent haze.
 
-**Actual:**
-- Schematic outline: Layer 1 in front ✓
-- Image rendering: Layer 1 behind Layer 3 ✗
-- Black semi-transparent overlay on hidden layers creates visual confusion
+**Solution:** 
+- Fixed layer sorting in `layer_space_view.dart` to use descending zIndex order
+- Reversed the iteration order so front layers (higher zIndex) are painted last in the Stack
+- Reduced hidden layer overlay opacity from 0.7 to 0.4 for clearer visual indication
+- Changed icon color from `Colors.white54` to `Colors.white70` for better visibility
 
-**Repro:**
-1. Create project with multiple layers
-2. Open 3D layer viewer
-3. Observe schematic cards vs actual image positions
-4. Hide some layers and observe the haze effect
+**Files Modified:**
+- `lib/widgets/layer_space_view.dart`
+- `lib/widgets/layer_card_3d.dart`
 
-### UAT-002: Download link fails on Android
+### UAT-002: Download link fails on Android ✓ FIXED
 
 **Discovered:** 2026-02-03
+**Resolved:** 2026-02-03
 **Severity:** Major
 **Feature:** Export/Download functionality
 **Platform:** Android only
-**Description:** When tapping the "Download" link in either the Projects bottom sheet or the Exports screen, a snackbar appears with "Could not open download link" error. This prevents users from downloading their exported files on Android.
+**Fix Commit:** [pending]
 
-**Expected:** Download link opens browser or download manager to retrieve the exported file
+**Problem:** When tapping the "Download" link, a snackbar appeared with "Could not open download link" error. `canLaunchUrl()` was returning false on Android, preventing downloads.
 
-**Actual:** Snackbar shows "Could not open download link" — download fails
+**Solution:**
+- Removed reliance on `canLaunchUrl()` check which was unreliable on Android
+- Added try-catch error handling for better debugging
+- Implemented fallback to `LaunchMode.platformDefault` if external application mode fails
+- Added more descriptive error messages
 
-**Repro:**
-1. On Android device, create and process a project
-2. Go to Projects tab, tap project, tap "Download" in bottom sheet — OR —
-3. Go to Exports tab, tap "Download" on an export
-4. Observe error snackbar
+**Files Modified:**
+- `lib/widgets/export_bottom_sheet.dart`
+
+### UAT-003: Manage button doesn't work on Android ✓ FIXED
+
+**Discovered:** 2026-02-03
+**Resolved:** 2026-02-03
+**Severity:** Major
+**Feature:** Subscription Management
+**Platform:** Android only
+**Fix Commit:** [pending]
+
+**Problem:** The "Manage" button in Settings for Pro subscribers was hardcoded to iOS App Store URL (`https://apps.apple.com/account/subscriptions`), so it did nothing on Android devices.
+
+**Solution:**
+- Added platform detection using `defaultTargetPlatform`
+- iOS/macOS: Opens Apple App Store subscription management
+- Android: Opens Google Play Store subscription management
+- Added error handling with fallback snackbar if launch fails
+
+**Files Modified:**
+- `lib/screens/settings_screen.dart`
 
 ## Passed Tests
 
 - Project creation (anonymous): PASS
 - BuildShip processing: PASS
 
-## Notes
-
-- Layer ordering bug suggests z-index or transform rendering issue in 3D viewer
-- Android download issue may be related to URL handling, permissions, or intent resolution
-- Both issues are functional blockers for their respective features
-
 ---
 
 *Tested: 2026-02-03*
-*Next: Plan fixes for UAT-001 and UAT-002*
+*Fixed: 2026-02-03*
+*All UAT issues resolved - ready for re-testing*

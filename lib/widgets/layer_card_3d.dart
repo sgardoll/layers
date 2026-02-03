@@ -80,11 +80,13 @@ class LayerCard3D extends StatelessWidget {
                 if (!layer.visible)
                   Positioned.fill(
                     child: Container(
-                      color: Colors.black.withOpacity(0.7),
+                      // Reduced opacity for subtler hidden state indicator
+                      color: Colors.black.withOpacity(0.4),
                       child: const Center(
                         child: Icon(
                           Icons.visibility_off,
-                          color: Colors.white54,
+                          // White with more opacity for better visibility
+                          color: Colors.white70,
                           size: 32,
                         ),
                       ),

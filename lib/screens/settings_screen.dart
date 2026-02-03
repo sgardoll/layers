@@ -235,10 +235,40 @@ class _SubscriptionSection extends ConsumerWidget {
   }
 
   void _manageSubscription(BuildContext context) async {
-    // Open App Store subscriptions page
-    final uri = Uri.parse('https://apps.apple.com/account/subscriptions');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    // Use platform-specific subscription management URL
+    final uri = switch (defaultTargetPlatform) {
+      TargetPlatform.iOS || TargetPlatform.macOS => Uri.parse(
+        'https://apps.apple.com/account/subscriptions',
+      ),
+      TargetPlatform.android => Uri.parse(
+        'https://play.google.com/store/account/subscriptions',
+      ),
+      _ => Uri.parse('https://apps.apple.com/account/subscriptions'),
+    };
+
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched && context.mounted) {
+        // Fallback: show snackbar with manual instructions
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Could not open subscription management. Please manage your subscription in your device settings.',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Manage subscription launch error: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open subscription page: $e')),
+        );
+      }
     }
   }
 }
@@ -402,12 +432,24 @@ class _AccountActionsSection extends ConsumerWidget {
             onPressed: () async {
               Navigator.of(dialogContext).pop();
               // Perform full logout - resets all user state
-              await ref.read(authStateProvider.notifier).signOut();
-              await ref.read(revenueCatServiceProvider).logOut();
-              ref.read(entitlementProvider.notifier).reset();
+              // Order matters: invalidate providers BEFORE auth signout
+              // to ensure they get recreated fresh for next user
               ref.read(projectListProvider.notifier).reset();
               ref.read(layerProvider.notifier).reset();
               ref.read(currentProjectProvider.notifier).state = null;
+              ref.read(entitlementProvider.notifier).reset();
+
+              // RevenueCat logout must happen after state reset but before auth signout
+              await ref.read(revenueCatServiceProvider).logOut();
+
+              // Finally, sign out from auth (this triggers UI navigation)
+              await ref.read(authStateProvider.notifier).signOut();
+
+              // Invalidate all user-scoped providers to force fresh state on next login
+              ref.invalidate(entitlementProvider);
+              ref.invalidate(projectListProvider);
+              ref.invalidate(layerProvider);
+              ref.invalidate(currentProjectProvider);
             },
             child: const Text('Sign Out'),
           ),
@@ -463,7 +505,8 @@ class _AccountActionsSection extends ConsumerWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (loadingContext) => const Center(child: CircularProgressIndicator()),
+      builder: (loadingContext) =>
+          const Center(child: CircularProgressIndicator()),
     );
 
     try {
@@ -478,12 +521,20 @@ class _AccountActionsSection extends ConsumerWidget {
       }
 
       // Perform full logout - resets all user state
-      await ref.read(authStateProvider.notifier).signOut();
-      await ref.read(revenueCatServiceProvider).logOut();
-      ref.read(entitlementProvider.notifier).reset();
+      // Order matters: reset local state, then RevenueCat, then auth
       ref.read(projectListProvider.notifier).reset();
       ref.read(layerProvider.notifier).reset();
       ref.read(currentProjectProvider.notifier).state = null;
+      ref.read(entitlementProvider.notifier).reset();
+
+      await ref.read(revenueCatServiceProvider).logOut();
+      await ref.read(authStateProvider.notifier).signOut();
+
+      // Invalidate providers to force fresh state on next login
+      ref.invalidate(entitlementProvider);
+      ref.invalidate(projectListProvider);
+      ref.invalidate(layerProvider);
+      ref.invalidate(currentProjectProvider);
 
       if (context.mounted) {
         Navigator.of(context).pop(); // Close loading

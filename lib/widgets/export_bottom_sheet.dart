@@ -175,14 +175,38 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
 
   Future<void> _downloadExport() async {
     final url = _currentExport?.assetUrl;
-    if (url == null) return;
+    if (url == null) {
+      _showSnackBar('No download URL available');
+      return;
+    }
 
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (mounted) Navigator.pop(context);
-    } else {
-      _showSnackBar('Could not open download link');
+    try {
+      final uri = Uri.parse(url);
+
+      // Try to launch without checking canLaunchUrl first (more reliable on Android)
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (launched) {
+        if (mounted) Navigator.pop(context);
+      } else {
+        // Fallback: try with platform default mode
+        final fallbackLaunched = await launchUrl(
+          uri,
+          mode: LaunchMode.platformDefault,
+        );
+
+        if (fallbackLaunched && mounted) {
+          Navigator.pop(context);
+        } else {
+          _showSnackBar('Could not open download link. Please try again.');
+        }
+      }
+    } catch (e) {
+      debugPrint('Download launch error: $e');
+      _showSnackBar('Could not open download link: $e');
     }
   }
 
