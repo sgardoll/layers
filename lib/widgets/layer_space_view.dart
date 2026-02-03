@@ -52,7 +52,6 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
           if (_lastFocalPoint == null) return;
 
           final delta = details.focalPoint - _lastFocalPoint!;
-          _lastFocalPoint = details.focalPoint;
 
           if (details.pointerCount == 2) {
             cameraNotifier.setZoom(_lastScale! * details.scale);
@@ -80,14 +79,25 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
         child: Container(
           color: const Color(0xFF1a1a2e),
           child: Center(
-            child: Transform(
+            // Apply camera transform first (rotate/zoom), then Z-translation
+            // Z-translation must be OUTSIDE scale to work with fake 3D layering
+                child: Transform(
               transform: _buildCameraMatrix(camera),
               alignment: Alignment.center,
               child: Transform.scale(
                 scale: camera.zoom,
                 child: Transform.translate(
-                  offset: Offset(camera.panX, camera.panY),
-                  child: _buildLayerStack(camera),
+                  // Z-translation at this level affects all layers equally
+                  // Higher zIndex (foreground) should have negative Z-offset (closer to camera)
+                  // Lower zIndex (background) should have positive Z-offset (further from camera)
+                  // We use negative of (layer.zIndex - center) * spacing
+                  // This inverts because we sort ascending (Layer 0=back-most)
+                  offset: Offset(
+                    camera.panX,
+                    camera.panY,
+                    (layer.zIndex - sortedLayers.length / 2) * -camera.layerSpacing,
+                  ),
+                  child: _buildLayerStackWithZOffset(camera),
                 ),
               ),
             ),
@@ -99,12 +109,14 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
 
   Matrix4 _buildCameraMatrix(CameraState camera) {
     return Matrix4.identity()
-      ..setEntry(3, 2, 0.001)
+      ..setEntry(3, 2, 0.001) // perspective
       ..rotateX(camera.rotationX)
       ..rotateY(camera.rotationY);
   }
 
-  Widget _buildLayerStack(CameraState camera) {
+  Widget _buildLayerStackWithZOffset(CameraState camera) {
+    // Build layer stack with proper Z-translation at camera transform level
+    // This ensures layer depth is consistent between list panel and 3D canvas
     if (widget.layers.isEmpty) {
       return const Center(
         child: Text(
@@ -115,7 +127,7 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
     }
 
     // Sort by zIndex ascending so back layers are painted first in Stack
-    // (Stack paints children in order, last child appears on top)
+    // (Stack paints children in order: first child painted first, last child painted last)
     final sortedLayers = [...widget.layers]
       ..sort((a, b) => a.zIndex.compareTo(b.zIndex));
 
@@ -129,15 +141,29 @@ class _LayerSpaceViewState extends ConsumerState<LayerSpaceView> {
             SizedBox(
               width: 400,
               height: 400,
-              child: LayerCard3D(
-                layer: sortedLayers[i],
-                index: i,
-                totalLayers: sortedLayers.length,
-                spacing: camera.layerSpacing,
-                isSelected: sortedLayers[i].id == widget.selectedLayerId,
-                onTap: () => widget.onLayerSelected?.call(sortedLayers[i].id),
-                onDoubleTap: () =>
-                    widget.onLayerDoubleTap?.call(sortedLayers[i].id),
+                child: Transform.translate(
+                // Z-translation at this level affects all layers equally
+                // Higher zIndex (foreground) should have negative Z-offset (closer to camera)
+                // Lower zIndex (background) should have positive Z-offset (further from camera)
+                // We use negative of (layer.zIndex - center) * spacing
+                // This inverts because we sort ascending (Layer 0=back-most)
+                // Calculate Z-offset as intermediate variable to avoid LSP confusion
+                final zOffset = (layer.zIndex - sortedLayers.length / 2) * -camera.layerSpacing;
+                offset: Offset(
+                  camera.panX,
+                  camera.panY,
+                  zOffset,
+                ),
+                child: LayerCard3D(
+                  layer: sortedLayers[i],
+                  index: i,
+                  totalLayers: sortedLayers.length,
+                  spacing: camera.layerSpacing,
+                  isSelected: sortedLayers[i].id == widget.selectedLayerId,
+                  onTap: () => widget.onLayerSelected?.call(sortedLayers[i].id),
+                  onDoubleTap: () =>
+                      widget.onLayerDoubleTap?.call(sortedLayers[i].id),
+                ),
               ),
             ),
         ],
