@@ -159,12 +159,29 @@ Plans:
 
 ---
 
+### 🎨 v1.4 Visual Overhaul (Next Priority)
+
+**Milestone Goal:** Transform the generic aesthetic into a distinctive, clean, light, and airy design system while fixing the mobile portrait UX issue.
+
+**Design Direction:** Clean, light, airy with generous whitespace — refined minimalism like a pro creative tool
+
+| Phase | Description | Status | Completed |
+|-------|-------------|--------|-----------|
+| 18 | Design System Foundation | Not Started | - |
+| 19 | Mobile UX & Layout | Not Started | - |
+| 20 | Screen Polish | Not Started | - |
+
+See: [v1.4-visual-overhaul.md](milestones/v1.4-visual-overhaul.md)
+
+---
+
 ## Backlog
 
 | Feature | Description |
 |---------|-------------|
 | Web platform | Flutter web deployment |
 | .layers export | Custom export format |
+| Visual overhaul | v1.4 milestone created |
 
 ## Domain Expertise
 
