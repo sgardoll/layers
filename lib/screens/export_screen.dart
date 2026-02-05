@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../core/result.dart';
@@ -273,15 +274,7 @@ class _ExportCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(_typeIcon, color: theme.colorScheme.primary),
-            ),
+            _buildThumbnail(context),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -373,5 +366,82 @@ class _ExportCard extends StatelessWidget {
     if (diff.inHours < 24) return '${diff.inHours}h ago';
     if (diff.inDays < 7) return '${diff.inDays}d ago';
     return '${date.month}/${date.day}/${date.year}';
+  }
+
+  Widget _buildThumbnail(BuildContext context) {
+    final theme = Theme.of(context);
+
+    // If no thumbnail URL, show generic icon
+    if (export.thumbnailUrl == null || export.thumbnailUrl!.isEmpty) {
+      return Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(_typeIcon, color: theme.colorScheme.primary),
+      );
+    }
+
+    // If it's already a full URL (http), use it directly
+    if (export.thumbnailUrl!.startsWith('http')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.network(
+          export.thumbnailUrl!,
+          width: 48,
+          height: 48,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(_typeIcon, color: theme.colorScheme.primary),
+          ),
+        ),
+      );
+    }
+
+    // Otherwise, get a signed URL from Supabase storage
+    return FutureBuilder<String>(
+      future: Supabase.instance.client.storage
+          .from('source-images')
+          .createSignedUrl(export.thumbnailUrl!, 3600),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              snapshot.data!,
+              width: 48,
+              height: 48,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(_typeIcon, color: theme.colorScheme.primary),
+              ),
+            ),
+          );
+        }
+        return Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(_typeIcon, color: theme.colorScheme.primary),
+        );
+      },
+    );
   }
 }

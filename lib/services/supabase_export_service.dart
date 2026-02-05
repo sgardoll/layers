@@ -14,6 +14,7 @@ class ExportJob {
   final String? assetUrl;
   final String? errorMessage;
   final DateTime createdAt;
+  final String? thumbnailUrl; // Project thumbnail for display
 
   ExportJob({
     required this.id,
@@ -23,6 +24,7 @@ class ExportJob {
     this.assetUrl,
     this.errorMessage,
     required this.createdAt,
+    this.thumbnailUrl,
   });
 
   bool get isComplete => status == 'ready';
@@ -76,7 +78,7 @@ class SupabaseExportService {
     try {
       final response = await _client
           .from('exports')
-          .select()
+          .select('*, projects!inner(thumbnail_path, source_image_path)')
           .eq('project_id', projectId)
           .order('created_at', ascending: false);
 
@@ -95,7 +97,7 @@ class SupabaseExportService {
     try {
       final response = await _client
           .from('exports')
-          .select()
+          .select('*, projects!inner(thumbnail_path, source_image_path)')
           .order('created_at', ascending: false)
           .limit(50);
 
@@ -132,6 +134,14 @@ class SupabaseExportService {
   }
 
   ExportJob _exportFromRow(Map<String, dynamic> row) {
+    // Extract thumbnail from joined projects data if available
+    String? thumbnailUrl;
+    if (row['projects'] != null) {
+      final projectData = row['projects'] as Map<String, dynamic>;
+      thumbnailUrl =
+          projectData['thumbnail_path'] ?? projectData['source_image_path'];
+    }
+
     return ExportJob(
       id: row['id'],
       projectId: row['project_id'],
@@ -143,6 +153,7 @@ class SupabaseExportService {
       assetUrl: row['asset_url'],
       errorMessage: row['error_message'],
       createdAt: DateTime.parse(row['created_at']),
+      thumbnailUrl: thumbnailUrl,
     );
   }
 }
