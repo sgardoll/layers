@@ -45,6 +45,9 @@ dependencies:
   purchases_flutter: ^9.10.7
   shared_preferences: ^2.3.5
 
+  # Typography
+  google_fonts: ^6.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
