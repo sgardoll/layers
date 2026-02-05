@@ -9,17 +9,15 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 ## Current Position
 
-Phase: 15.1 (Anonymous RLS Fix)
-Plan: 15.1-01-PLAN.md created
-Status: Ready to execute
+Phase: 19-mobile-ux
+Plan: 19-01-PLAN.md
+Status: In progress - Tasks 1-2 complete, Task 3 (checkpoint) pending verification
 
-Phase: 15.2 (App Store Review Compliance)
-Plan: 15.2-01-PLAN.md created
-Status: Ready to execute
+Last activity: 2026-02-05 — Responsive layout implemented for LayersScreen, pending human verification
 
-Last activity: 2026-02-04 — Quick fix: Fixed Dart syntax errors in 3D layer viewer (lib/widgets/layer_space_view.dart)
+Progress: Mobile UX improvements in progress — responsive layout with bottom sheet for mobile
 
-Progress: Quick task 004 complete - 3D layer viewer now compiles successfully
+Progress Bar: ████████████████████░░░░ 80% (Phases 1-18 complete, Phase 19 in progress)
 
 ## Shipped Builds
 
@@ -45,8 +43,26 @@ Progress: Quick task 004 complete - 3D layer viewer now compiles successfully
 - fal.ai BiRefNet for AI layer extraction (via Wavespeed)
 - Email auth with RevenueCat user linking
 - Theme colors from app icon (#1C39EC, #00A9FE)
+- Design system uses Inter font via Google Fonts for distinctive typography
+- Dual theme system: Light (clean/airy) and Dark (immersive navy with cyan glow)
+- Responsive breakpoint at 600px (Material Design standard)
+- Bottom sheet pattern for mobile secondary UI (feels more natural than drawer)
+- FAB stack pattern for multiple actions on mobile portrait
 
 ### Completed This Session
+- Responsive layout system (Phase 19-01)
+  - Breakpoints: mobile (<600px), tablet (600-900px), desktop (>900px)
+  - ResponsiveLayout widget with builder pattern
+  - LayerListPanel now theme-aware (uses AppColors)
+  - LayersScreen adapts: side panel on desktop, bottom sheet on mobile
+  - Mobile portrait: Full 3D viewer with FAB to open layers
+  - App builds successfully, pending human verification
+- Design system foundation complete (Phase 18-01)
+  - Dual color palettes: Light (clean blue/cyan) and Dark (immersive navy with cyan glow)
+  - Typography system using Inter font via Google Fonts
+  - Spacing tokens (4-64pt scale) with EdgeInsets helpers
+  - Complete ThemeData for both light and dark modes
+  - Integrated into main.dart, app builds successfully
 - BuildShip workflow fully implemented (triggers on project insert, extracts layers, uploads to storage)
 - Fixed LayersScreen to auto-fetch layers from Supabase on mount
 
@@ -69,6 +85,18 @@ Progress: Quick task 004 complete - 3D layer viewer now compiles successfully
 - RevenueCat: Pass initialized instance to ProviderScope
 - Status badge overflow: Flexible wrapper with ellipsis
 - Export compliance: Added ITSAppUsesNonExemptEncryption to Info.plist
+
+### Phase 18 Complete (2026-02-05)
+- Design system foundation with dual themes
+- Files: lib/theme/app_colors.dart, app_spacing.dart, app_typography.dart, app_theme.dart
+- Commits: 23b116d, edffc73
+
+### Phase 19 In Progress (2026-02-05)
+- Responsive layout system created
+- LayerListPanel updated with theme-aware colors
+- LayersScreen refactored with mobile bottom sheet
+- Pending: Human verification checkpoint
+- Commits: dab16d9, 970fe6a
 
 ### Quick Tasks Completed
 

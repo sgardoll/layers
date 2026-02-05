@@ -13,20 +13,23 @@ class LayerListPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final layerState = ref.watch(layerProvider);
     final layerNotifier = ref.read(layerProvider.notifier);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
       width: width,
       decoration: BoxDecoration(
-        color: const Color(0xFF16213e),
-        border: Border(left: BorderSide(color: Colors.white.withOpacity(0.1))),
+        color: colorScheme.surface,
+        border: Border(
+          left: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
+        ),
       ),
       child: Column(
         children: [
           _buildHeader(context),
           Expanded(
             child: layerState.layers.isEmpty
-                ? _buildEmptyState()
-                : _buildLayerList(layerState, layerNotifier),
+                ? _buildEmptyState(context)
+                : _buildLayerList(context, layerState, layerNotifier),
           ),
         ],
       ),
@@ -34,21 +37,23 @@ class LayerListPanel extends ConsumerWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Colors.white.withOpacity(0.1)),
+          bottom: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
         ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.layers, color: Colors.white70, size: 20),
+          Icon(Icons.layers, color: colorScheme.onSurfaceVariant, size: 20),
           const SizedBox(width: 8),
-          const Text(
+          Text(
             'Layers',
             style: TextStyle(
-              color: Colors.white,
+              color: colorScheme.onSurface,
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
@@ -60,7 +65,7 @@ class LayerListPanel extends ConsumerWidget {
               return Text(
                 '$count',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+                  color: colorScheme.onSurfaceVariant,
                   fontSize: 14,
                 ),
               );
@@ -71,28 +76,38 @@ class LayerListPanel extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState() {
-    return const Center(
+  Widget _buildEmptyState(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.photo_library_outlined, color: Colors.white24, size: 48),
-          SizedBox(height: 16),
+          Icon(
+            Icons.photo_library_outlined,
+            color: colorScheme.outline,
+            size: 48,
+          ),
+          const SizedBox(height: 16),
           Text(
             'No layers yet',
-            style: TextStyle(color: Colors.white38, fontSize: 14),
+            style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 14),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             'Import an image to get started',
-            style: TextStyle(color: Colors.white24, fontSize: 12),
+            style: TextStyle(color: colorScheme.outline, fontSize: 12),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildLayerList(LayerState layerState, LayerNotifier notifier) {
+  Widget _buildLayerList(
+    BuildContext context,
+    LayerState layerState,
+    LayerNotifier notifier,
+  ) {
     // Sort layers by zIndex descending so highest Z (front-most) appears at top
     // This matches design tool conventions (Photoshop, Figma, etc.)
     final sortedLayers = [...layerState.layers]
@@ -148,6 +163,8 @@ class _LayerListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -158,20 +175,20 @@ class _LayerListItem extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: isSelected
-                ? const Color(0xFF6366f1).withOpacity(0.2)
+                ? colorScheme.primary.withOpacity(0.15)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected ? const Color(0xFF6366f1) : Colors.transparent,
+              color: isSelected ? colorScheme.primary : Colors.transparent,
               width: 1.5,
             ),
           ),
           child: Row(
             children: [
-              _buildThumbnail(),
+              _buildThumbnail(context),
               const SizedBox(width: 12),
-              Expanded(child: _buildInfo()),
-              _buildActions(),
+              Expanded(child: _buildInfo(context)),
+              _buildActions(context),
             ],
           ),
         ),
@@ -179,13 +196,15 @@ class _LayerListItem extends StatelessWidget {
     );
   }
 
-  Widget _buildThumbnail() {
+  Widget _buildThumbnail(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       width: 40,
       height: 40,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
-        color: Colors.white.withOpacity(0.1),
+        color: colorScheme.surfaceContainerHighest,
         image: DecorationImage(
           image: NetworkImage(layer.pngUrl),
           fit: BoxFit.cover,
@@ -198,16 +217,18 @@ class _LayerListItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
                 color: Colors.black.withOpacity(0.6),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.visibility_off,
-                color: Colors.white54,
+                color: colorScheme.onSurfaceVariant,
                 size: 16,
               ),
             ),
     );
   }
 
-  Widget _buildInfo() {
+  Widget _buildInfo(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -215,7 +236,9 @@ class _LayerListItem extends StatelessWidget {
         Text(
           layer.name,
           style: TextStyle(
-            color: layer.visible ? Colors.white : Colors.white54,
+            color: layer.visible
+                ? colorScheme.onSurface
+                : colorScheme.onSurfaceVariant,
             fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
@@ -225,13 +248,15 @@ class _LayerListItem extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           'z: ${layer.zIndex}',
-          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11),
+          style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 11),
         ),
       ],
     );
   }
 
-  Widget _buildActions() {
+  Widget _buildActions(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -240,7 +265,9 @@ class _LayerListItem extends StatelessWidget {
             layer.visible ? Icons.visibility : Icons.visibility_off,
             size: 18,
           ),
-          color: layer.visible ? Colors.white70 : Colors.white38,
+          color: layer.visible
+              ? colorScheme.onSurface
+              : colorScheme.onSurfaceVariant,
           onPressed: onVisibilityToggle,
           tooltip: layer.visible ? 'Hide layer' : 'Show layer',
           padding: EdgeInsets.zero,
@@ -248,7 +275,7 @@ class _LayerListItem extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.delete_outline, size: 18),
-          color: Colors.white38,
+          color: colorScheme.onSurfaceVariant,
           onPressed: onDelete,
           tooltip: 'Delete layer',
           padding: EdgeInsets.zero,
@@ -256,7 +283,11 @@ class _LayerListItem extends StatelessWidget {
         ),
         ReorderableDragStartListener(
           index: layer.zIndex,
-          child: const Icon(Icons.drag_handle, size: 18, color: Colors.white38),
+          child: Icon(
+            Icons.drag_handle,
+            size: 18,
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );

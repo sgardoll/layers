@@ -6,7 +6,11 @@ import 'providers/entitlement_provider.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
 import 'services/revenuecat_service.dart';
+<<<<<<< kimi
+import 'theme/app_theme.dart';
+=======
 import 'widgets/splash_screen.dart';
+>>>>>>> master
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -87,20 +91,8 @@ class _InitializedApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Layers',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1),
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1),
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
       routerConfig: router,
     );
