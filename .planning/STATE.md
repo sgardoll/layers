@@ -81,7 +81,7 @@ Progress Bar: █████████████████████░
 
 ### Open Items
 - End-to-end testing needed
-- RevenueCat: Create `export_single` consumable product ($0.50) in dashboard
+- RevenueCat: ✅ Created `layers_export` consumable package in `export_credits` offering ($0.50)
 
 ### Pending Todos
 - Fix missing `delete_user_account` RPC function in Supabase (see .planning/todos/pending/)
