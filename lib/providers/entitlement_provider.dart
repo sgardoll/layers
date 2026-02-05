@@ -76,31 +76,37 @@ final linkedRevenueCatServiceProvider = FutureProvider<RevenueCatService>((
 /// Provider for entitlement state
 /// Watches the linked RevenueCat service so it re-initializes when user changes
 final entitlementProvider =
-    StateNotifierProvider<EntitlementNotifier, EntitlementState>((ref) {
-      final linkedServiceAsync = ref.watch(linkedRevenueCatServiceProvider);
+    StateNotifierProvider<EntitlementNotifier, EntitlementState>(
+      (ref) {
+        final linkedServiceAsync = ref.watch(linkedRevenueCatServiceProvider);
 
-      // CRITICAL FIX: Wait for linked service to complete before using it
-      // If it's still loading, return a notifier in loading state
-      if (linkedServiceAsync.isLoading) {
-        return EntitlementNotifier.loading(projectCount: 0);
-      }
+        // CRITICAL FIX: Wait for linked service to complete before using it
+        // If it's still loading, return a notifier in loading state
+        if (linkedServiceAsync.isLoading) {
+          return EntitlementNotifier.loading(projectCount: 0);
+        }
 
-      if (linkedServiceAsync.hasError || linkedServiceAsync.value == null) {
-        // Fallback to unlinked service if something went wrong
-        final fallbackService = ref.read(revenueCatServiceProvider);
+        if (linkedServiceAsync.hasError || linkedServiceAsync.value == null) {
+          // Fallback to unlinked service if something went wrong
+          final fallbackService = ref.read(revenueCatServiceProvider);
+          return EntitlementNotifier(
+            revenueCatService: fallbackService,
+            projectCount: 0,
+          );
+        }
+
+        // Linked service is ready - use it
+        // Note: Project count is updated separately via updateProjectCount
         return EntitlementNotifier(
-          revenueCatService: fallbackService,
+          revenueCatService: linkedServiceAsync.requireValue,
           projectCount: 0,
         );
-      }
-
-      // Linked service is ready - use it
-      // Note: Project count is updated separately via updateProjectCount
-      return EntitlementNotifier(
-        revenueCatService: linkedServiceAsync.requireValue,
-        projectCount: 0,
-      );
-    });
+      },
+      dependencies: [
+        linkedRevenueCatServiceProvider,
+        revenueCatServiceProvider,
+      ],
+    );
 
 class EntitlementNotifier extends StateNotifier<EntitlementState> {
   final RevenueCatService? _revenueCatService;

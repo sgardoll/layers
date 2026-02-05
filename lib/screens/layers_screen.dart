@@ -76,13 +76,16 @@ class _LayersScreenState extends ConsumerState<LayersScreen> {
       });
     }
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < Breakpoints.mobile;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Layers'),
         centerTitle: true,
         actions: [
           if (hasLayers) ...[
-            // 3-Tab Navigation: 3D / 2D / Layers
+            // Tab Navigation: 3D / 2D (always shown) + Layers (mobile only)
             Container(
               decoration: BoxDecoration(
                 color: colorScheme.surfaceContainerHighest,
@@ -119,25 +122,25 @@ class _LayersScreenState extends ConsumerState<LayersScreen> {
                           false;
                     },
                   ),
-                  Container(
-                    width: 1,
-                    height: 32,
-                    color: colorScheme.outline.withOpacity(0.5),
-                  ),
-                  _buildTabButton(
-                    icon: Icons.list,
-                    label: 'Layers',
-                    isSelected: selectedTab == LayerViewTab.layers,
-                    onTap: () {
-                      ref.read(layerViewTabProvider.notifier).state =
-                          LayerViewTab.layers;
-                      // On mobile, show bottom sheet when Layers tab selected
-                      if (MediaQuery.of(context).size.width <
-                          Breakpoints.mobile) {
+                  // Only show Layers tab on mobile (when side panel is not visible)
+                  if (isMobile) ...[
+                    Container(
+                      width: 1,
+                      height: 32,
+                      color: colorScheme.outline.withOpacity(0.5),
+                    ),
+                    _buildTabButton(
+                      icon: Icons.list,
+                      label: 'Layers',
+                      isSelected: selectedTab == LayerViewTab.layers,
+                      onTap: () {
+                        ref.read(layerViewTabProvider.notifier).state =
+                            LayerViewTab.layers;
+                        // On mobile, show bottom sheet when Layers tab selected
                         _showLayersBottomSheet(context, ref);
-                      }
-                    },
-                  ),
+                      },
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -299,7 +302,17 @@ class _LayersScreenState extends ConsumerState<LayersScreen> {
           );
         },
       ),
-    );
+    ).then((_) {
+      // When bottom sheet is dismissed, deselect Layers tab
+      // Switch back to the tab matching current view mode
+      if (mounted) {
+        final currentViewMode = ref.read(viewModeProvider);
+        final newTab = currentViewMode == ViewMode.space3d
+            ? LayerViewTab.threeD
+            : LayerViewTab.twoD;
+        ref.read(layerViewTabProvider.notifier).state = newTab;
+      }
+    });
   }
 
   Widget _buildTabButton({
