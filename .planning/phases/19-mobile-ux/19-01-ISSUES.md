@@ -6,6 +6,10 @@
 
 ## Open Issues
 
+[None]
+
+## Resolved Issues
+
 ### UAT-001: Riverpod provider initialization error on app launch
 
 **Discovered:** 2026-02-05
@@ -32,9 +36,12 @@
 - Provider dependency issue with overridden providers
 - Likely in `lib/providers/project_provider.dart` or related files
 
-## Resolved Issues
-
-[None yet]
+**Fixed:** 2026-02-05
+**Commit:** ad646ee
+**Solution:**
+- Removed circular dependency: entitlementProvider no longer watches projectListProvider
+- ProjectListNotifier now updates entitlementProvider directly when project count changes
+- This breaks the initialization cycle that was causing the assertion error
 
 ---
 
