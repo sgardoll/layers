@@ -10,6 +10,7 @@ tech-stack:
     - "Responsive breakpoints: mobile (<600px), tablet (600-900px), desktop (>900px)"
     - "LayoutBuilder for adaptive layouts"
     - "Bottom sheet pattern for mobile secondary UI"
+    - "3-tab navigation: 3D / 2D / Layers unified control"
 
 key-files:
   created:
@@ -21,7 +22,8 @@ key-files:
 key-decisions:
   - "Bottom sheet approach chosen over drawer for quick layer access on mobile"
   - "Breakpoint at 600px aligns with Material Design guidelines"
-  - "FAB stack pattern for multiple actions on mobile"
+  - "3-tab navigation (3D/2D/Layers) replaces separate toggle + button"
+  - "LayerListPanel has optional header to avoid duplication in bottom sheet"
 
 completed: 2026-02-05
 ---
@@ -32,10 +34,10 @@ completed: 2026-02-05
 
 ## Performance
 
-- **Duration:** ~15 min
+- **Duration:** ~25 min
 - **Started:** 2026-02-05
 - **Completed:** 2026-02-05
-- **Tasks:** 2 of 3 complete (checkpoint pending)
+- **Tasks:** 3 of 3 complete
 - **Files modified:** 3
 
 ## Accomplishments
@@ -53,14 +55,20 @@ completed: 2026-02-05
    - All text colors use theme's `onSurface` and `onSurfaceVariant`
    - Selected state uses theme's `primary` color
    - Panel works in both side-panel and bottom-sheet contexts
+   - Added `showHeader` parameter to optionally hide header (for bottom sheet use)
 
 3. **Refactored LayersScreen with responsive layout** (`lib/screens/layers_screen.dart`)
    - Desktop/Tablet (>=600px): Side-by-side layout preserved
    - Mobile Portrait (<600px): Full-screen 3D viewer with bottom sheet
-   - Added layers button to AppBar for mobile access
-   - Added layers FAB that opens draggable bottom sheet (60-85% height)
-   - Bottom sheet includes handle bar, header, and full LayerListPanel
+   - **New 3-tab navigation**: 3D, 2D, Layers in unified segmented control
+   - Selecting "Layers" tab opens bottom sheet on mobile
+   - Bottom sheet includes handle bar and LayerListPanel (no duplicate header)
    - All existing functionality preserved (view modes, export, loading states)
+
+4. **Fixed checkpoint issues**
+   - Removed duplicate "Layers" header in bottom sheet
+   - Replaced ViewModeToggle + separate layers button with unified 3-tab navigation
+   - Cleaner, more intuitive UX
 
 ## Task Commits
 
@@ -68,6 +76,7 @@ Each task was committed atomically:
 
 1. **Task 1: Create responsive layout helper and update LayerListPanel** - `dab16d9` (feat)
 2. **Task 2: Refactor LayersScreen with responsive layout** - `970fe6a` (feat)
+3. **Task 3: Fix duplicate header and add 3-tab navigation** - `42a736e` (feat)
 
 ## Files Created/Modified
 
@@ -79,12 +88,27 @@ Each task was committed atomically:
 
 - **Bottom sheet over drawer:** Bottom sheet feels more natural for quick layer access and allows partial screen visibility
 - **Breakpoint at 600px:** Follows Material Design guidelines for mobile/tablet distinction
-- **FAB stack pattern:** Multiple FABs stacked vertically on mobile for layers and export actions
+- **3-tab navigation:** Unified 3D/2D/Layers control is cleaner than separate toggle + button
+- **Optional LayerListPanel header:** `showHeader` parameter allows reuse in both side panel (with header) and bottom sheet (without header)
 - **Theme integration:** LayerListPanel fully theme-aware, works with both light and dark modes
 
 ## Deviations from Plan
 
-None - plan executed exactly as written.
+### Checkpoint Fixes (Post-Verification)
+
+**1. [Checkpoint Fix] Removed duplicate "Layers" header in bottom sheet**
+- **Found during:** Checkpoint verification (Task 3)
+- **Issue:** Bottom sheet had its own "Layers" header, then LayerListPanel also showed "Layers" - duplicate titles
+- **Fix:** Added `showHeader` parameter to LayerListPanel (default true), set to false when used in bottom sheet
+- **Files modified:** lib/widgets/layer_list_panel.dart, lib/screens/layers_screen.dart
+- **Committed in:** 42a736e
+
+**2. [Checkpoint Fix] Replaced 2-tab toggle + button with unified 3-tab navigation**
+- **Found during:** Checkpoint verification (Task 3)
+- **Issue:** AppBar had ViewModeToggle (2 tabs: 3D/2D) + separate layers icon button - cluttered UI
+- **Fix:** Created unified 3-tab segmented control: 3D, 2D, Layers. Selecting "Layers" opens bottom sheet on mobile.
+- **Files modified:** lib/screens/layers_screen.dart
+- **Committed in:** 42a736e
 
 ## Issues Encountered
 
@@ -92,23 +116,24 @@ None.
 
 ## Checkpoint Status
 
-**Task 3 (checkpoint:human-verify) pending user verification:**
+**Task 3 (checkpoint:human-verify) APPROVED** ✅
 
-The responsive layout implementation is complete but requires human verification before marking the plan complete. The user needs to:
+User verified the responsive layout works correctly on both mobile and desktop.
 
-1. Run the app on iOS simulator or Android emulator
-2. Test desktop/tablet layout (iPad or landscape)
-3. Test mobile portrait layout (iPhone)
-4. Verify theme switching works correctly
-5. Verify both 3D Space View and 2D Stack View work in both layouts
+Verification completed:
+- Desktop/tablet layout shows side panel correctly
+- Mobile portrait shows full-screen 3D viewer with bottom sheet access
+- Theme switching works (light/dark modes)
+- Both 3D Space View and 2D Stack View work in all layouts
 
 ## Next Phase Readiness
 
 - Responsive layout system is reusable for other screens
-- LayerListPanel is now fully theme-aware
+- LayerListPanel is now fully theme-aware with optional header
 - Mobile UX issue (blocking panel) is resolved
-- Pending user verification before finalizing
+- 3-tab navigation provides cleaner, more intuitive UX
+- Phase 19-01 complete and verified
 
 ---
 *Phase: 19-mobile-ux*
-*Status: Pending verification*
+*Status: Complete*
