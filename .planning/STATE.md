@@ -49,6 +49,7 @@ Progress Bar: █████████████████████░
 - Bottom sheet pattern for mobile secondary UI (feels more natural than drawer)
 - 3-tab navigation (3D/2D/Layers) for unified view control
 - Optional component headers for flexible UI composition
+- Riverpod provider dependencies must be declared when using ProviderScope overrides
 
 ### Completed This Session
 - Responsive layout system (Phase 19-01)
@@ -98,8 +99,9 @@ Progress Bar: █████████████████████░
 - LayerListPanel updated with theme-aware colors and optional header
 - LayersScreen refactored with mobile bottom sheet
 - 3-tab navigation (3D/2D/Layers) replaces toggle + button
-- Checkpoint issues fixed: duplicate header removed
-- Commits: dab16d9, 970fe6a, 42a736e
+- Checkpoint issues fixed: duplicate header removed, Layers tab hidden on desktop
+- SettingsScreen Riverpod crash fixed: entitlementProvider dependencies declared
+- Commits: dab16d9, 970fe6a, 42a736e, 40a7f18
 
 ### Quick Tasks Completed
 
