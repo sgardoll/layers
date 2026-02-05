@@ -6,11 +6,8 @@ import 'providers/entitlement_provider.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
 import 'services/revenuecat_service.dart';
-<<<<<<< kimi
 import 'theme/app_theme.dart';
-=======
 import 'widgets/splash_screen.dart';
->>>>>>> master
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
