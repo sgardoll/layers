@@ -9,6 +9,7 @@ import '../models/project.dart';
 import '../services/supabase_project_service.dart'
     hide supabaseProjectServiceProvider;
 import 'auth_provider.dart';
+import 'entitlement_provider.dart';
 import 'supabase_providers.dart';
 
 /// State for the project list
@@ -91,6 +92,10 @@ class ProjectListNotifier extends StateNotifier<ProjectListState> {
             _subscribeToProject(project.id);
           }
         }
+        // Update entitlement provider with project count
+        _ref
+            ?.read(entitlementProvider.notifier)
+            .updateProjectCount(projects.length);
       },
       failure: (message, _) {
         state = state.copyWith(
@@ -112,9 +117,14 @@ class ProjectListNotifier extends StateNotifier<ProjectListState> {
 
     result.when(
       success: (project) {
-        state = state.copyWith(projects: [project, ...state.projects]);
+        final updatedProjects = [project, ...state.projects];
+        state = state.copyWith(projects: updatedProjects);
         // Subscribe to updates for the new project
         _subscribeToProject(project.id);
+        // Update entitlement provider with new project count
+        _ref
+            ?.read(entitlementProvider.notifier)
+            .updateProjectCount(updatedProjects.length);
       },
       failure: (_, __) {},
     );
@@ -128,9 +138,14 @@ class ProjectListNotifier extends StateNotifier<ProjectListState> {
     result.when(
       success: (_) {
         _cancelSubscription(projectId);
-        state = state.copyWith(
-          projects: state.projects.where((p) => p.id != projectId).toList(),
-        );
+        final updatedProjects = state.projects
+            .where((p) => p.id != projectId)
+            .toList();
+        state = state.copyWith(projects: updatedProjects);
+        // Update entitlement provider with new project count
+        _ref
+            ?.read(entitlementProvider.notifier)
+            .updateProjectCount(updatedProjects.length);
       },
       failure: (_, __) {},
     );

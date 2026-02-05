@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import '../services/revenuecat_service.dart';
 import 'auth_provider.dart';
-import 'project_provider.dart';
 
 /// Entitlement state for the current user
 class EntitlementState {
@@ -79,14 +78,11 @@ final linkedRevenueCatServiceProvider = FutureProvider<RevenueCatService>((
 final entitlementProvider =
     StateNotifierProvider<EntitlementNotifier, EntitlementState>((ref) {
       final linkedServiceAsync = ref.watch(linkedRevenueCatServiceProvider);
-      final projectListState = ref.watch(projectListProvider);
 
       // CRITICAL FIX: Wait for linked service to complete before using it
       // If it's still loading, return a notifier in loading state
       if (linkedServiceAsync.isLoading) {
-        return EntitlementNotifier.loading(
-          projectCount: projectListState.projects.length,
-        );
+        return EntitlementNotifier.loading(projectCount: 0);
       }
 
       if (linkedServiceAsync.hasError || linkedServiceAsync.value == null) {
@@ -94,14 +90,15 @@ final entitlementProvider =
         final fallbackService = ref.read(revenueCatServiceProvider);
         return EntitlementNotifier(
           revenueCatService: fallbackService,
-          projectCount: projectListState.projects.length,
+          projectCount: 0,
         );
       }
 
       // Linked service is ready - use it
+      // Note: Project count is updated separately via updateProjectCount
       return EntitlementNotifier(
         revenueCatService: linkedServiceAsync.requireValue,
-        projectCount: projectListState.projects.length,
+        projectCount: 0,
       );
     });
 
