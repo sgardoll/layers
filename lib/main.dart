@@ -6,29 +6,82 @@ import 'providers/entitlement_provider.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
 import 'services/revenuecat_service.dart';
+<<<<<<< kimi
 import 'theme/app_theme.dart';
+=======
+import 'widgets/splash_screen.dart';
+>>>>>>> master
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await initSupabase();
-
-  // Initialize RevenueCat for subscriptions
-  final revenueCat = RevenueCatService();
-  await revenueCat.initialize();
 
   runApp(
-    ProviderScope(
-      overrides: [
-        // Pass the initialized RevenueCat instance to the provider system
-        revenueCatServiceProvider.overrideWithValue(revenueCat),
-      ],
-      child: const LayersApp(),
+    const ProviderScope(
+      child: LayersApp(),
     ),
   );
 }
 
+final _initializationProvider = FutureProvider<RevenueCatService>((ref) async {
+  await initSupabase();
+  final revenueCat = RevenueCatService();
+  await revenueCat.initialize();
+  return revenueCat;
+});
+
 class LayersApp extends ConsumerWidget {
   const LayersApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final initialization = ref.watch(_initializationProvider);
+    final themeMode = ref.watch(themeModeProvider);
+
+    return MaterialApp(
+      title: 'Layers',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6366F1),
+          brightness: Brightness.light,
+        ),
+        useMaterial3: true,
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6366F1),
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      themeMode: themeMode,
+      home: initialization.when(
+        data: (revenueCat) => ProviderScope(
+          overrides: [
+            revenueCatServiceProvider.overrideWithValue(revenueCat),
+          ],
+          child: const _InitializedApp(),
+        ),
+        loading: () => const SplashScreen(
+          isInitialized: false,
+          child: SizedBox.shrink(),
+        ),
+        error: (error, stack) => Scaffold(
+          backgroundColor: SplashScreen.backgroundColor,
+          body: Center(
+            child: Text(
+              'Failed to initialize: $error',
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InitializedApp extends ConsumerWidget {
+  const _InitializedApp();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
