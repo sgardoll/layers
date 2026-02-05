@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -51,114 +53,74 @@ final revenueCatServiceProvider = Provider<RevenueCatService>((ref) {
   return RevenueCatService();
 });
 
-/// Provider that links RevenueCat to the current authenticated user
-/// This ensures RevenueCat customer info is properly scoped to the user
-final linkedRevenueCatServiceProvider = FutureProvider<RevenueCatService>((
-  ref,
-) async {
-  final service = ref.watch(revenueCatServiceProvider);
-  final user = ref.watch(currentUserProvider);
-
-  if (user != null) {
-    // Link this RevenueCat session to the authenticated user
-    await service.logIn(user.id);
-    debugPrint('RevenueCat: Linked to user ${user.id}');
-  } else {
-    // CRITICAL FIX: Explicitly log out when user is null (anonymous)
-    // This prevents cached Pro entitlements from leaking to new/anonymous users
-    await service.logOut();
-    debugPrint('RevenueCat: Logged out for anonymous session');
-  }
-
-  return service;
-});
-
 /// Provider for entitlement state
-/// Watches the linked RevenueCat service so it re-initializes when user changes
+/// Manages Pro subscription status and project limits
 final entitlementProvider =
-    StateNotifierProvider<EntitlementNotifier, EntitlementState>(
-      (ref) {
-        final linkedServiceAsync = ref.watch(linkedRevenueCatServiceProvider);
+    StateNotifierProvider<EntitlementNotifier, EntitlementState>((ref) {
+      final revenueCatService = ref.watch(revenueCatServiceProvider);
+      final user = ref.watch(currentUserProvider);
 
-        // CRITICAL FIX: Wait for linked service to complete before using it
-        // If it's still loading, return a notifier in loading state
-        if (linkedServiceAsync.isLoading) {
-          return EntitlementNotifier.loading(projectCount: 0);
-        }
-
-        if (linkedServiceAsync.hasError || linkedServiceAsync.value == null) {
-          // Fallback to unlinked service if something went wrong
-          final fallbackService = ref.read(revenueCatServiceProvider);
-          return EntitlementNotifier(
-            revenueCatService: fallbackService,
-            projectCount: 0,
-          );
-        }
-
-        // Linked service is ready - use it
-        // Note: Project count is updated separately via updateProjectCount
-        return EntitlementNotifier(
-          revenueCatService: linkedServiceAsync.requireValue,
-          projectCount: 0,
-        );
-      },
-      dependencies: [
-        linkedRevenueCatServiceProvider,
-        revenueCatServiceProvider,
-      ],
-    );
+      return EntitlementNotifier(
+        revenueCatService: revenueCatService,
+        userId: user?.id,
+        projectCount: 0,
+      );
+    }, dependencies: [revenueCatServiceProvider, currentUserProvider]);
 
 class EntitlementNotifier extends StateNotifier<EntitlementState> {
-  final RevenueCatService? _revenueCatService;
+  final RevenueCatService _revenueCatService;
+  String? _currentUserId;
 
   EntitlementNotifier({
     required RevenueCatService revenueCatService,
+    String? userId,
     required int projectCount,
   }) : _revenueCatService = revenueCatService,
-       super(EntitlementState(projectCount: projectCount)) {
-    _init();
+       _currentUserId = userId,
+       super(EntitlementState(projectCount: projectCount, isLoading: true)) {
+    _init(userId);
   }
 
-  /// Factory constructor for loading state (used when linked service is still initializing)
-  factory EntitlementNotifier.loading({required int projectCount}) {
-    return EntitlementNotifier._internal(
-      revenueCatService: null,
-      projectCount: projectCount,
-      isLoading: true,
-    );
+  Future<void> _init(String? userId) async {
+    _setupCustomerInfoListener();
+    await _handleUserChange(userId);
   }
 
-  /// Internal constructor for special states
-  EntitlementNotifier._internal({
-    required RevenueCatService? revenueCatService,
-    required int projectCount,
-    bool isLoading = false,
-  }) : _revenueCatService = revenueCatService,
-       super(
-         EntitlementState(projectCount: projectCount, isLoading: isLoading),
-       );
+  /// Handle user login/logout changes
+  Future<void> _handleUserChange(String? newUserId) async {
+    _currentUserId = newUserId;
 
-  Future<void> _init() async {
-    if (_revenueCatService != null) {
+    if (newUserId != null) {
+      // User logged in - link RevenueCat
+      await _revenueCatService.logIn(newUserId);
+      debugPrint('RevenueCat: Linked to user $newUserId');
       await checkEntitlements();
+    } else {
+      // User logged out - log out from RevenueCat
+      await _revenueCatService.logOut();
+      debugPrint('RevenueCat: Logged out for anonymous session');
+      // Reset to free tier
+      state = const EntitlementState(isPro: false, isLoading: false);
     }
+  }
+
+  /// Set up listener for RevenueCat customer info updates
+  /// This ensures entitlement state updates when subscriptions change
+  void _setupCustomerInfoListener() {
+    Purchases.addCustomerInfoUpdateListener((customerInfo) {
+      debugPrint('RevenueCat: Customer info updated via listener');
+      final isPro =
+          customerInfo.entitlements.all['Layers Pro']?.isActive ?? false;
+      state = state.copyWith(isPro: isPro, isLoading: false);
+    });
   }
 
   /// Check current entitlements from RevenueCat
   Future<void> checkEntitlements() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    // Check if service is available (may be null during loading state)
-    if (_revenueCatService == null) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Subscription service not ready',
-      );
-      return;
-    }
-
     try {
-      final isPro = await _revenueCatService!.hasProEntitlement();
+      final isPro = await _revenueCatService.hasProEntitlement();
       state = state.copyWith(isPro: isPro, isLoading: false);
     } catch (e) {
       state = state.copyWith(
@@ -177,17 +139,8 @@ class EntitlementNotifier extends StateNotifier<EntitlementState> {
   Future<bool> purchasePackage(Package package) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    // Check if service is available
-    if (_revenueCatService == null) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Subscription service not ready',
-      );
-      return false;
-    }
-
     try {
-      final result = await _revenueCatService!.purchasePackage(package);
+      final result = await _revenueCatService.purchasePackage(package);
       if (result.isSuccess) {
         state = state.copyWith(isPro: true, isLoading: false);
         return true;
@@ -217,17 +170,8 @@ class EntitlementNotifier extends StateNotifier<EntitlementState> {
   Future<bool> restorePurchases() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    // Check if service is available
-    if (_revenueCatService == null) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Subscription service not ready',
-      );
-      return false;
-    }
-
     try {
-      final result = await _revenueCatService!.restorePurchases();
+      final result = await _revenueCatService.restorePurchases();
 
       if (result.isSuccess) {
         state = state.copyWith(isPro: true, isLoading: false);
