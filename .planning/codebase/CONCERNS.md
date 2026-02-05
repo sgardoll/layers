@@ -11,13 +11,11 @@
 - Impact: High risk of regressions, difficult to refactor safely
 - Fix approach: Add unit tests for services, widget tests for critical UI
 
-**TODO Comments in Production Code:**
+**TODO Comments in Production Code:** ✅ RESOLVED
 - Issue: Debug/testing code marked with TODO still present
 - Files: `lib/widgets/export_bottom_sheet.dart` (lines 61, 63)
 - Content: `// TODO: Remove before release - forces purchase sheet for testing`
-- Why: Development shortcuts not cleaned up
-- Impact: Potential security/exposure of test code paths
-- Fix approach: Remove TODO comments and associated debug code before next release
+- Resolution: Fixed in commit f18f31d - debug constants removed before release
 
 **Manual JSON Serialization:**
 - Issue: Core models (Project, Layer) use manual `fromJson`/`toJson` instead of code generation
