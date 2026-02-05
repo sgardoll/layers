@@ -10,9 +10,6 @@ AI-powered image layer extraction for designers, artists, and content creators w
 - **Project Organization** — All extractions saved locally with cloud sync support
 - **Cross-Platform** — iOS, Android, and macOS from a single codebase
 
-## Demo
-[Watch the demo](https://drive.google.com/file/d/1fSpLroVMGuGBjbU9urY40whSiseW4CrP/view?usp=sharing)
-
 ## Screenshots
 
 <p align="center">
