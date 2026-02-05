@@ -52,6 +52,16 @@ Progress Bar: █████████████████████░
 - Riverpod provider dependencies must be declared when using ProviderScope overrides
 
 ### Completed This Session
+- Export screen thumbnail fix
+  - Export cards now show actual project thumbnails instead of blue squares
+  - Added thumbnailUrl field to ExportJob model
+  - SupabaseExportService joins with projects table to fetch thumbnails
+  - Commits: 9dfc80d
+- Entitlement provider fix
+  - Fixed Riverpod dependency override error on logout
+  - Added RevenueCat customer info update listener for real-time entitlement updates
+  - Simplified provider architecture to avoid nested dependency issues
+  - Commits: 95dfe55
 - Responsive layout system (Phase 19-01)
   - Breakpoints: mobile (<600px), tablet (600-900px), desktop (>900px)
   - ResponsiveLayout widget with builder pattern
