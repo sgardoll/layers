@@ -190,6 +190,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
             Text(
               'No Exports Yet',
               style: Theme.of(context).textTheme.headlineSmall,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
@@ -197,6 +198,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

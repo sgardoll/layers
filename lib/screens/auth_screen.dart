@@ -207,17 +207,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   Widget _buildHeader(BuildContext context, ColorScheme colorScheme) {
     return Column(
       children: [
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Icon(
-            Icons.layers,
-            size: 40,
-            color: colorScheme.onPrimaryContainer,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Image.asset(
+            'assets/logo.png',
+            width: 80,
+            height: 80,
           ),
         ),
         const SizedBox(height: 16),

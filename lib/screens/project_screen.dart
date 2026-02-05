@@ -149,18 +149,18 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.person_outline,
+            Icons.layers,
             size: 80,
             color: Theme.of(context).colorScheme.primary,
           ),
           const SizedBox(height: 24),
           Text(
-            'Sign in to view your projects',
+            'Welcome to Layers',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           Text(
-            'Create an account to save and access your projects across devices',
+            'Sign in to create and manage your projects',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -178,14 +178,6 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
             },
             icon: const Icon(Icons.login),
             label: const Text('Sign In'),
-          ),
-          const SizedBox(height: 16),
-          TextButton(
-            onPressed: () async {
-              // Allow anonymous users to create projects
-              await _pickAndCreateProject();
-            },
-            child: const Text('Continue as Guest'),
           ),
         ],
       ),
@@ -206,6 +198,7 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
           Text(
             'No projects yet',
             style: Theme.of(context).textTheme.headlineSmall,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
@@ -213,6 +206,7 @@ class _ProjectScreenState extends ConsumerState<ProjectScreen> {
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
           FilledButton.icon(
