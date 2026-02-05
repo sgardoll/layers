@@ -13,7 +13,7 @@ Phase: 19-mobile-ux
 Plan: 19-01-PLAN.md
 Status: Complete
 
-Last activity: 2026-02-05 — Phase 19-01 complete: Responsive layout with 3-tab navigation
+Last activity: 2026-02-06 — Completed quick task 005: Fix Deploy for Mac OS (code signing configuration)
 
 Progress: Mobile UX complete — responsive layout, 3-tab navigation (3D/2D/Layers), bottom sheet on mobile
 
@@ -115,10 +115,11 @@ Progress Bar: █████████████████████░
 
 ### Quick Tasks Completed
 
-| # | Description | Date | Commit |
-|---|-------------|------|--------|
-| 001 | Fix entitlement state persistence on logout | 2026-02-01 | 1f6210b |
-| 004 | Fix Dart syntax errors in 3D layer viewer | 2026-02-04 | 67f3377 |
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 001 | Fix entitlement state persistence on logout | 2026-02-01 | 1f6210b | - |
+| 004 | Fix Dart syntax errors in 3D layer viewer | 2026-02-04 | 67f3377 | - |
+| 005 | Fix Deploy for Mac OS | 2026-02-06 | 9a9544d | [005-fix-mac-os-deploy](./quick/005-fix-mac-os-deploy/) |
 
 ### Blockers
 None
