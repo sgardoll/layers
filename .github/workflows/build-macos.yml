@@ -64,17 +64,35 @@ jobs:
           security import certificate.p12 -k build.keychain -P "$MAC_CERTIFICATE_PASSWORD" -T /usr/bin/codesign -T /usr/bin/productbuild -T /usr/bin/security
           security set-key-partition-list -S apple-tool:,apple:,codesign:,productbuild: -s -k "$MAC_KEYCHAIN_PASSWORD" build.keychain
           
+          # Add keychain to search list so Xcode can find it
+          security list-keychains -s build.keychain $(security list-keychains | tr -d '"')
+          
+          # Allow codesign to access the keychain without UI prompt
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MAC_KEYCHAIN_PASSWORD" build.keychain
+          
           # Install provisioning profile
           echo "$MAC_PROVISIONING_PROFILE_BASE64" | base64 -d > profile.provisionprofile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.provisionprofile ~/Library/MobileDevice/Provisioning\ Profiles/
           
+          # Debug: List imported certificates
+          echo "=== Imported Certificates ==="
+          security find-identity -v -p codesigning build.keychain
+          
       - name: Build macOS app
+        env:
+          MAC_KEYCHAIN_PASSWORD: ${{ secrets.MAC_KEYCHAIN_PASSWORD }}
         run: |
+          # Ensure keychain is unlocked for the build
+          security unlock-keychain -p "$MAC_KEYCHAIN_PASSWORD" build.keychain
+          
+          # Build with explicit signing settings
           flutter build macos \
             --release \
             --build-name=${{ github.event.inputs.version }} \
-            --build-number=${{ github.event.inputs.build_number }}
+            --build-number=${{ github.event.inputs.build_number }} \
+            --dart-define=FLUTTER_BUILD_NAME=${{ github.event.inputs.version }} \
+            --dart-define=FLUTTER_BUILD_NUMBER=${{ github.event.inputs.build_number }}
             
       - name: Create PKG installer
         run: |
