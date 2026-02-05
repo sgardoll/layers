@@ -143,7 +143,7 @@ Future<String?> signIn(String email, String password) async {
 
 **TODO Comments:**
 - Format: `// TODO: description`
-- Remove before release (see `lib/widgets/export_bottom_sheet.dart` for examples)
+- Remove before release
 
 ## Function Design
 
