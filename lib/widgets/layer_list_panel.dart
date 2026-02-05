@@ -6,8 +6,9 @@ import '../providers/layer_provider.dart';
 
 class LayerListPanel extends ConsumerWidget {
   final double width;
+  final bool showHeader;
 
-  const LayerListPanel({super.key, this.width = 280});
+  const LayerListPanel({super.key, this.width = 280, this.showHeader = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,7 +26,7 @@ class LayerListPanel extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          _buildHeader(context),
+          if (showHeader) _buildHeader(context),
           Expanded(
             child: layerState.layers.isEmpty
                 ? _buildEmptyState(context)

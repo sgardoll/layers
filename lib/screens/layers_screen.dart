@@ -10,7 +10,6 @@ import '../widgets/export_bottom_sheet.dart';
 import '../widgets/layer_space_view.dart';
 import '../widgets/stack_view_2d.dart';
 import '../widgets/layer_list_panel.dart';
-import '../widgets/view_mode_toggle.dart';
 import '../widgets/responsive_layout.dart';
 
 /// Provider that fetches layers for the current project
@@ -32,11 +31,27 @@ final _layersFetchProvider = FutureProvider.autoDispose<void>((ref) async {
   );
 });
 
-class LayersScreen extends ConsumerWidget {
+/// Enum for the 3-tab navigation: 3D, 2D, Layers
+enum LayerViewTab { threeD, twoD, layers }
+
+/// Provider for the selected tab in the AppBar
+final layerViewTabProvider = StateProvider<LayerViewTab>(
+  (ref) => LayerViewTab.threeD,
+);
+
+/// Provider to track if layers panel is visible (for mobile bottom sheet)
+final layersPanelVisibleProvider = StateProvider<bool>((ref) => false);
+
+class LayersScreen extends ConsumerStatefulWidget {
   const LayersScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LayersScreen> createState() => _LayersScreenState();
+}
+
+class _LayersScreenState extends ConsumerState<LayersScreen> {
+  @override
+  Widget build(BuildContext context) {
     // Trigger layer fetch when screen loads
     ref.watch(_layersFetchProvider);
 
@@ -45,26 +60,89 @@ class LayersScreen extends ConsumerWidget {
     final layerNotifier = ref.read(layerProvider.notifier);
     final isLoading = ref.watch(_layersFetchProvider).isLoading;
     final hasLayers = layerState.layers.isNotEmpty;
+    final selectedTab = ref.watch(layerViewTabProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+
+    // Sync view mode with tab selection
+    // When tab changes, update view mode accordingly
+    if (selectedTab == LayerViewTab.threeD && viewMode != ViewMode.space3d) {
+      Future.microtask(() {
+        ref.read(viewModeProvider.notifier).setMode(ViewMode.space3d);
+      });
+    } else if (selectedTab == LayerViewTab.twoD &&
+        viewMode != ViewMode.stack2d) {
+      Future.microtask(() {
+        ref.read(viewModeProvider.notifier).setMode(ViewMode.stack2d);
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Layers'),
         centerTitle: true,
         actions: [
-          const ViewModeToggle(),
           if (hasLayers) ...[
-            const SizedBox(width: 8),
-            Builder(
-              builder: (context) {
-                return IconButton(
-                  icon: const Icon(Icons.layers),
-                  tooltip: 'Show layers',
-                  onPressed: () => _showLayersBottomSheet(context, ref),
-                );
-              },
+            // 3-Tab Navigation: 3D / 2D / Layers
+            Container(
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: colorScheme.outline.withOpacity(0.5)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildTabButton(
+                    icon: Icons.view_in_ar,
+                    label: '3D',
+                    isSelected: selectedTab == LayerViewTab.threeD,
+                    onTap: () {
+                      ref.read(layerViewTabProvider.notifier).state =
+                          LayerViewTab.threeD;
+                      ref.read(layersPanelVisibleProvider.notifier).state =
+                          false;
+                    },
+                  ),
+                  Container(
+                    width: 1,
+                    height: 32,
+                    color: colorScheme.outline.withOpacity(0.5),
+                  ),
+                  _buildTabButton(
+                    icon: Icons.layers,
+                    label: '2D',
+                    isSelected: selectedTab == LayerViewTab.twoD,
+                    onTap: () {
+                      ref.read(layerViewTabProvider.notifier).state =
+                          LayerViewTab.twoD;
+                      ref.read(layersPanelVisibleProvider.notifier).state =
+                          false;
+                    },
+                  ),
+                  Container(
+                    width: 1,
+                    height: 32,
+                    color: colorScheme.outline.withOpacity(0.5),
+                  ),
+                  _buildTabButton(
+                    icon: Icons.list,
+                    label: 'Layers',
+                    isSelected: selectedTab == LayerViewTab.layers,
+                    onTap: () {
+                      ref.read(layerViewTabProvider.notifier).state =
+                          LayerViewTab.layers;
+                      // On mobile, show bottom sheet when Layers tab selected
+                      if (MediaQuery.of(context).size.width <
+                          Breakpoints.mobile) {
+                        _showLayersBottomSheet(context, ref);
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(width: 8),
           ],
-          const SizedBox(width: 8),
         ],
       ),
       body: LayoutBuilder(
@@ -112,35 +190,21 @@ class LayersScreen extends ConsumerWidget {
                       )
                     : null;
 
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Layers FAB (mobile only - hidden on desktop)
-                    if (MediaQuery.of(context).size.width < Breakpoints.mobile)
-                      FloatingActionButton.small(
-                        heroTag: 'layers_fab',
-                        onPressed: () => _showLayersBottomSheet(context, ref),
-                        tooltip: 'Layers',
-                        child: const Icon(Icons.layers),
-                      ),
-                    const SizedBox(height: 8),
-                    // Export FAB
-                    FloatingActionButton(
-                      heroTag: 'export_fab',
-                      onPressed: () {
-                        if (project == null) return;
-                        ExportBottomSheet.show(
-                          context,
-                          layers: layerState.layers,
-                          projectName: project.name,
-                          projectId: project.id,
-                          selectedLayer: selectedLayer,
-                        );
-                      },
-                      tooltip: 'Export',
-                      child: const Icon(Icons.ios_share),
-                    ),
-                  ],
+                // Only show Export FAB - Layers is now accessed via the 3rd tab
+                return FloatingActionButton(
+                  heroTag: 'export_fab',
+                  onPressed: () {
+                    if (project == null) return;
+                    ExportBottomSheet.show(
+                      context,
+                      layers: layerState.layers,
+                      projectName: project.name,
+                      projectId: project.id,
+                      selectedLayer: selectedLayer,
+                    );
+                  },
+                  tooltip: 'Export',
+                  child: const Icon(Icons.ios_share),
                 );
               },
             )
@@ -223,16 +287,64 @@ class LayersScreen extends ConsumerWidget {
                   ),
                 ),
                 const Divider(),
-                // Layer list
+                // Layer list (no header since bottom sheet has its own)
                 Expanded(
                   child: LayerListPanel(
                     width: MediaQuery.of(context).size.width,
+                    showHeader: false,
                   ),
                 ),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildTabButton({
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(7),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? colorScheme.primary.withOpacity(0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
