@@ -58,50 +58,35 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
     super.dispose();
   }
 
-  // TODO: Remove before release - forces purchase sheet for testing
-  static const _debugForcePurchaseSheet = false;
-  // TODO: Remove before release - skips payment gate entirely for testing exports
-  static const _debugSkipPaymentGate = false;
-
   Future<void> _startExport(ExportType type) async {
-    // Debug: skip payment gate entirely for testing export workflow
-    if (_debugSkipPaymentGate) {
-      debugPrint('DEBUG: Skipping payment gate for export testing');
-    } else {
-      // Check if user has Pro entitlement
-      final revenueCat = ref.read(revenueCatServiceProvider);
+    // Check if user has Pro entitlement
+    final revenueCat = ref.read(revenueCatServiceProvider);
 
-      bool isPro = false;
+    bool isPro = false;
+    try {
+      isPro = await revenueCat.hasProEntitlement();
+    } catch (e) {
+      // RevenueCat error - log and treat as non-Pro (will show purchase option)
+      debugPrint('RevenueCat entitlement check failed: $e');
+    }
+
+    if (!isPro) {
+      // Show purchase sheet for non-Pro users
+      if (!mounted) return;
+
+      bool purchased = false;
       try {
-        isPro = await revenueCat.hasProEntitlement();
+        purchased = await ExportPurchaseSheet.show(
+          context,
+          revenueCatService: revenueCat,
+        );
       } catch (e) {
-        // RevenueCat error - log and treat as non-Pro (will show purchase option)
-        debugPrint('RevenueCat entitlement check failed: $e');
+        debugPrint('Purchase sheet error: $e');
+        _showSnackBar('Could not load purchase options');
+        return;
       }
 
-      // Debug override for testing purchase flow
-      if (_debugForcePurchaseSheet) {
-        isPro = false;
-      }
-
-      if (!isPro) {
-        // Show purchase sheet for non-Pro users
-        if (!mounted) return;
-
-        bool purchased = false;
-        try {
-          purchased = await ExportPurchaseSheet.show(
-            context,
-            revenueCatService: revenueCat,
-          );
-        } catch (e) {
-          debugPrint('Purchase sheet error: $e');
-          _showSnackBar('Could not load purchase options');
-          return;
-        }
-
-        if (!purchased || !mounted) return;
-      }
+      if (!purchased || !mounted) return;
     }
 
     setState(() {
