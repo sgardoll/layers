@@ -217,7 +217,6 @@ Plans:
 |-------|-------------|--------|-----------|
 | 18 | Design System Foundation | **Complete** | 2026-02-05 |
 | 19 | Mobile UX & Layout | **Complete** | 2026-02-05 |
-| 22 | Screen Polish | Not Started | - |
 
 See: [v1.4-visual-overhaul.md](milestones/v1.4-visual-overhaul.md)
 
