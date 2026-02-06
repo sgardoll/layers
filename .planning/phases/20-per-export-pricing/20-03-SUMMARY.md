@@ -64,8 +64,8 @@ completed: 2026-02-07
 
 ## Accomplishments
 
-- Verified CreditTransaction model exists with proper serialization (from prior work)
-- Verified CreditsService exists with all required methods including realtime subscription
+- Created CreditTransaction model with enum (purchase, consumption, monthlyBonus, refund) and Supabase serialization
+- Created CreditsService with getUserCredits, consumeCredit, addCredits, getTransactionHistory, and realtime subscription support
 - Created CreditsProvider following entitlement_provider.dart pattern exactly:
   - CreditState immutable class with copyWith
   - StateNotifierProvider with dependencies declared
@@ -77,15 +77,17 @@ completed: 2026-02-07
 
 Each task was committed atomically:
 
-1. **Task 1: CreditTransaction model** - Already existed (verified)
-2. **Task 2: CreditsService** - Already existed (verified)
-3. **Task 3: CreditsProvider** - `a745d40` (feat)
+1. **Task 1: Create CreditTransaction model** - `a795a68` (feat)
+2. **Task 2: Create CreditsService** - `a94c5aa` (feat)
+3. **Task 3: Create CreditsProvider** - `a745d40` (feat)
 
-**Plan metadata:** [pending - will be committed after summary creation]
+**Plan metadata:** [docs(20-03) commit pending]
 
 ## Files Created
 
-- `lib/providers/credits_provider.dart` - Complete CreditsProvider with realtime subscription
+- `lib/models/credit_transaction.dart` - CreditTransaction model with enum, serialization
+- `lib/services/credits_service.dart` - CreditsService for Supabase operations and realtime
+- `lib/providers/credits_provider.dart` - CreditsProvider with StateNotifier and derived providers
 
 ## Decisions Made
 
