@@ -10,9 +10,14 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 ## Current Position
 
 Milestone: v1.3 Monetization & Settings
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
+Phase: 20 of 21 — Planned
+Plan: 5 plans ready
+Status: Ready for execution
+
+**Phase 20: Per-Export Pricing** — 5 plans in 3 waves
+- Wave 1: Database migrations + RevenueCat config (parallel)
+- Wave 2: CreditsProvider with realtime subscription
+- Wave 3: Export UI + Purchase flow (parallel)
 
 Last activity: 2026-02-07 — Completed quick task 006: Hide subscription row when logged out
 
@@ -74,3 +79,9 @@ Last activity: 2026-02-07 — Completed quick task 006: Hide subscription row wh
 
 ### Blockers
 None
+
+## Session Continuity
+
+Last session: 2026-02-07
+Stopped at: Phase 20 planned, 5 plans created
+Next action: Execute Phase 20 Wave 1
