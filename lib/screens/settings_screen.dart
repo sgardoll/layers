@@ -31,11 +31,13 @@ class SettingsScreen extends ConsumerWidget {
           ],
 
           // Subscription Section
-          _SubscriptionSection(
-            isPro: entitlement.isPro,
-            isLoading: entitlement.isLoading,
-          ),
-          const Divider(height: 1),
+          if (user != null) ...[
+            _SubscriptionSection(
+              isPro: entitlement.isPro,
+              isLoading: entitlement.isLoading,
+            ),
+            const Divider(height: 1),
+          ],
 
           // Theme Section
           _ThemeSection(currentMode: themeMode),
@@ -57,8 +59,8 @@ class SettingsScreen extends ConsumerWidget {
             child: Text(
               'Layers v1.1.2 (15)',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
           ),
           const SizedBox(height: 24),
@@ -143,9 +145,8 @@ class _SubscriptionSection extends ConsumerWidget {
                 isPro
                     ? Icons.workspace_premium
                     : Icons.workspace_premium_outlined,
-                color: isPro
-                    ? colorScheme.primary
-                    : colorScheme.onSurfaceVariant,
+                color:
+                    isPro ? colorScheme.primary : colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -170,9 +171,8 @@ class _SubscriptionSection extends ConsumerWidget {
                           color: isPro
                               ? colorScheme.primary
                               : colorScheme.onSurfaceVariant,
-                          fontWeight: isPro
-                              ? FontWeight.w600
-                              : FontWeight.normal,
+                          fontWeight:
+                              isPro ? FontWeight.w600 : FontWeight.normal,
                         ),
                       ),
                   ],
@@ -238,11 +238,11 @@ class _SubscriptionSection extends ConsumerWidget {
     // Use platform-specific subscription management URL
     final uri = switch (defaultTargetPlatform) {
       TargetPlatform.iOS || TargetPlatform.macOS => Uri.parse(
-        'https://apps.apple.com/account/subscriptions',
-      ),
+          'https://apps.apple.com/account/subscriptions',
+        ),
       TargetPlatform.android => Uri.parse(
-        'https://play.google.com/store/account/subscriptions',
-      ),
+          'https://play.google.com/store/account/subscriptions',
+        ),
       _ => Uri.parse('https://apps.apple.com/account/subscriptions'),
     };
 

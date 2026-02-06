@@ -2,22 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-25)
+See: .planning/PROJECT.md (updated 2026-02-06)
 
 **Core value:** The 3D layer viewer must feel magical
 **Current focus:** v1.3 Monetization & Settings
 
 ## Current Position
 
-Phase: 19-mobile-ux
-Plan: 19-01-PLAN.md
-Status: Complete
+Milestone: v1.3 Monetization & Settings
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
 
-Last activity: 2026-02-06 — Completed quick task 005: Fix Deploy for Mac OS (code signing configuration)
-
-Progress: Mobile UX complete — responsive layout, 3-tab navigation (3D/2D/Layers), bottom sheet on mobile
-
-Progress Bar: █████████████████████░░░ 84% (Phases 1-19 complete)
+Last activity: 2026-02-07 — Completed quick task 006: Hide subscription row when logged out
 
 ## Shipped Builds
 
@@ -33,8 +30,9 @@ Progress Bar: █████████████████████░
 
 ## Next Steps
 
-1. Test end-to-end flow: create project → BuildShip processes → app shows layers
-2. Plan v1.1 features (web platform, .layers export, user feedback)
+1. Complete requirements definition for v1.3
+2. Create roadmap for Phases 16-17
+3. Begin Phase 16: Per-Export Pricing
 
 ## Accumulated Context
 
@@ -51,67 +49,19 @@ Progress Bar: █████████████████████░
 - Optional component headers for flexible UI composition
 - Riverpod provider dependencies must be declared when using ProviderScope overrides
 
-### Completed This Session
-- Export screen thumbnail fix
-  - Export cards now show actual project thumbnails instead of blue squares
-  - Added thumbnailUrl field to ExportJob model
-  - SupabaseExportService joins with projects table to fetch thumbnails
-  - Commits: 9dfc80d
-- Entitlement provider fix
-  - Fixed Riverpod dependency override error on logout
-  - Added RevenueCat customer info update listener for real-time entitlement updates
-  - Simplified provider architecture to avoid nested dependency issues
-  - Commits: 95dfe55
-- Responsive layout system (Phase 19-01)
-  - Breakpoints: mobile (<600px), tablet (600-900px), desktop (>900px)
-  - ResponsiveLayout widget with builder pattern
-  - LayerListPanel now theme-aware (uses AppColors)
-  - LayersScreen adapts: side panel on desktop, bottom sheet on mobile
-  - Mobile portrait: Full 3D viewer with bottom sheet for layers
-  - 3-tab navigation (3D/2D/Layers) in unified control
-  - Checkpoint issues fixed and verified
-- Design system foundation complete (Phase 18-01)
-  - Dual color palettes: Light (clean blue/cyan) and Dark (immersive navy with cyan glow)
-  - Typography system using Inter font via Google Fonts
-  - Spacing tokens (4-64pt scale) with EdgeInsets helpers
-  - Complete ThemeData for both light and dark modes
-  - Integrated into main.dart, app builds successfully
-- BuildShip workflow fully implemented (triggers on project insert, extracts layers, uploads to storage)
-- Fixed LayersScreen to auto-fetch layers from Supabase on mount
+### Validated Capabilities (Shipped)
+- v1.0 MVP: Core layer extraction, 3D viewer, export, project management
+- v1.1 Polish: App flow fixes, navigation improvements
+- v1.2 Critical Fixes: Anonymous RLS, App Store compliance, macOS compliance
+- v1.4 Visual Foundation: Design system, responsive layout, mobile UX
 
 ### Open Items
+- v1.3 Monetization & Settings: Not started
+- BuildShip workflow processing: Spec complete, needs implementation
 - End-to-end testing needed
-- RevenueCat: ✅ Created `layers_export` consumable package in `export_credits` offering ($0.50)
 
 ### Pending Todos
 - Fix missing `delete_user_account` RPC function in Supabase (see .planning/todos/pending/)
-
-### Roadmap Evolution
-- Phase 14 added: Remove "Layers" from app bar - access via Project/Export tabs
-- Phase 15 complete: Critical Bug Fixes - all issues resolved
-- Phase 15.2 added: App Store Review Compliance (iOS subscriptions/EULA)
-- Phase 15.3 added: Mac App Store Compliance (icon, entitlements, subscriptions)
-
-### Phase 15 Fixes (2026-01-26)
-- iOS image picker: Use XFile.readAsBytes() for sandboxing compatibility
-- Image thumbnails: Use signed URLs instead of public URLs
-- RevenueCat: Pass initialized instance to ProviderScope
-- Status badge overflow: Flexible wrapper with ellipsis
-- Export compliance: Added ITSAppUsesNonExemptEncryption to Info.plist
-
-### Phase 18 Complete (2026-02-05)
-- Design system foundation with dual themes
-- Files: lib/theme/app_colors.dart, app_spacing.dart, app_typography.dart, app_theme.dart
-- Commits: 23b116d, edffc73
-
-### Phase 19 Complete (2026-02-05)
-- Responsive layout system created
-- LayerListPanel updated with theme-aware colors and optional header
-- LayersScreen refactored with mobile bottom sheet
-- 3-tab navigation (3D/2D/Layers) replaces toggle + button
-- Checkpoint issues fixed: duplicate header removed, Layers tab hidden on desktop
-- SettingsScreen Riverpod crash fixed: entitlementProvider dependencies declared
-- Commits: dab16d9, 970fe6a, 42a736e, 40a7f18
 
 ### Quick Tasks Completed
 
@@ -120,6 +70,7 @@ Progress Bar: █████████████████████░
 | 001 | Fix entitlement state persistence on logout | 2026-02-01 | 1f6210b | - |
 | 004 | Fix Dart syntax errors in 3D layer viewer | 2026-02-04 | 67f3377 | - |
 | 005 | Fix Deploy for Mac OS | 2026-02-06 | 9a9544d | [005-fix-mac-os-deploy](./quick/005-fix-mac-os-deploy/) |
+| 006 | Hide subscription row when logged out | 2026-02-06 | 118edb6 | [006-hide-subscription-row-when-logged-out](./quick/006-hide-subscription-row-when-logged-out/) |
 
 ### Blockers
 None
