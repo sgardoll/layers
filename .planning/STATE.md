@@ -70,7 +70,7 @@ Last activity: 2026-02-07 — Completed quick task 006: Hide subscription row wh
 | 001 | Fix entitlement state persistence on logout | 2026-02-01 | 1f6210b | - |
 | 004 | Fix Dart syntax errors in 3D layer viewer | 2026-02-04 | 67f3377 | - |
 | 005 | Fix Deploy for Mac OS | 2026-02-06 | 9a9544d | [005-fix-mac-os-deploy](./quick/005-fix-mac-os-deploy/) |
-| 006 | Hide subscription row when logged out | 2026-02-06 | 118edb6 | [006-hide-subscription-row-when-logged-out](./quick/006-hide-subscription-row-when-logged-out/) |
+| 006 | Hide subscription row when logged out | 2026-02-06 | 2c108ac | [006-hide-subscription-row-when-logged-out](./quick/006-hide-subscription-row-when-logged-out/) |
 
 ### Blockers
 None
