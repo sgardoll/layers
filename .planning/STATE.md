@@ -11,15 +11,15 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 
 Milestone: v1.3 Monetization & Settings
 Phase: 20 of 21 — In Progress
-Plan: 1 of 5 complete
+Plan: 2 of 5 complete
 Status: Executing Wave 1
 
 **Phase 20: Per-Export Pricing** — 5 plans in 3 waves
-- Wave 1: Database migrations ✓ + RevenueCat config (parallel)
+- Wave 1: Database migrations ✓ + RevenueCat config ✓ (complete)
 - Wave 2: CreditsProvider with realtime subscription
 - Wave 3: Export UI + Purchase flow (parallel)
 
-Last activity: 2026-02-07 — Completed plan 20-01: Database migrations for user_credits and purchase_transactions
+Last activity: 2026-02-07 — Completed plan 20-02: RevenueCat configuration documentation
 
 ## Shipped Builds
 
@@ -35,11 +35,10 @@ Last activity: 2026-02-07 — Completed plan 20-01: Database migrations for user
 
 ## Next Steps
 
-1. Execute plan 20-02: CreditsProvider with realtime subscription
-2. Execute plan 20-03: RevenueCat consumable configuration (parallel with 20-02)
-3. Execute plan 20-04: Export bottom sheet with credit check/consume logic
-4. Execute plan 20-05: Purchase flow UI and integration
-5. Begin Phase 21: Settings Enhancement
+1. Execute plan 20-03: CreditsProvider with realtime subscription
+2. Execute plan 20-04: Export bottom sheet with credit check/consume logic
+3. Execute plan 20-05: Purchase flow UI and integration
+4. Begin Phase 21: Settings Enhancement
 
 ## Accumulated Context
 
@@ -55,6 +54,7 @@ Last activity: 2026-02-07 — Completed plan 20-01: Database migrations for user
 - 3-tab navigation (3D/2D/Layers) for unified view control
 - Optional component headers for flexible UI composition
 - Riverpod provider dependencies must be declared when using ProviderScope overrides
+- Per-export pricing: $0.49 USD (Apple) / $0.50 USD (Google) consumable IAP alongside subscriptions
 
 ### Validated Capabilities (Shipped)
 - v1.0 MVP: Core layer extraction, 3D viewer, export, project management
@@ -85,5 +85,5 @@ None
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Completed plan 20-01: Database migrations
-Next action: Execute plan 20-02: CreditsProvider
+Stopped at: Completed plan 20-02: RevenueCat configuration
+Next action: Execute plan 20-03: CreditsProvider with realtime subscription
