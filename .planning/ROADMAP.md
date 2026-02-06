@@ -134,12 +134,14 @@ Plans:
 
 | Phase | Description | Status | Completed |
 |-------|-------------|--------|-----------|
-| 20 | Per-Export Pricing | Not Started | - |
-| 21 | Settings Enhancement | Not Started | - |
+| 20 | Per-Export Pricing | Complete | 2026-02-07 |
+| 21 | Settings Enhancement | Ready | - |
 
 ---
 
-#### Phase 20: Per-Export Pricing
+#### Phase 20: Per-Export Pricing — **COMPLETE** ✓
+
+**Completed:** 2026-02-07
 
 **Goal:** Add $0.50 consumable IAP as additional monetization option alongside subscriptions, with monthly bonus credits for Pro users
 
@@ -147,12 +149,12 @@ Plans:
 **Research:** Completed — see `.planning/research/`
 **Requirements:** MON-01 to MON-06, DB-01, DB-02, DB-04, STATE-01, STATE-03
 
-**Success Criteria:**
-1. User can purchase single export credit for $0.50
-2. Credit is consumed at moment of export (not purchase)
-3. Pro subscribers receive bonus credits monthly
-4. Clear price display with configure-before-pay flow
-5. Restore purchases works for both subscriptions and consumables
+**Success Criteria:** ✓ All met
+1. ✓ User can purchase single export credit for $0.50
+2. ✓ Credit is consumed at moment of export (not purchase)
+3. ✓ Pro subscribers receive bonus credits monthly
+4. ✓ Clear price display with configure-before-pay flow
+5. ✓ Restore purchases works for both subscriptions and consumables
 
 **Key Implementation Notes:**
 - Configure consumable product in RevenueCat dashboard ($0.49/0.50)
@@ -164,11 +166,11 @@ Plans:
 - Test consumable repurchase on Android (known platform issue)
 
 Plans:
-- [ ] 20-01: Database migrations (user_credits, purchase_transactions)
-- [ ] 20-02: CreditsProvider and realtime subscription
-- [ ] 20-03: RevenueCat consumable configuration
-- [ ] 20-04: Export bottom sheet with credit check/consume logic
-- [ ] 20-05: Purchase flow UI and integration
+- [x] 20-01: Database migrations (user_credits, purchase_transactions)
+- [x] 20-02: CreditsProvider and realtime subscription
+- [x] 20-03: RevenueCat consumable configuration
+- [x] 20-04: Export bottom sheet with credit check/consume logic
+- [x] 20-05: Purchase flow UI and integration
 
 ---
 
