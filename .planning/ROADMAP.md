@@ -126,36 +126,82 @@ Plans:
 
 ---
 
-### 🚧 v1.3 Monetization & Settings (Up Next)
+### 🚧 v1.3 Monetization & Settings (Current Milestone)
 
 **Milestone Goal:** Add per-export consumable IAP and improve settings screen with user info, subscription status, and account management
 
+**Requirements:** 18 total (MON-01 to MON-06, SET-01 to SET-06, DB-01 to DB-04, STATE-01 to STATE-03)
+
 | Phase | Description | Status | Completed |
 |-------|-------------|--------|-----------|
-| 16 | Per-Export Pricing | Not Started | - |
-| 17 | Settings Screen | Not Started | - |
+| 20 | Per-Export Pricing | Not Started | - |
+| 21 | Settings Enhancement | Not Started | - |
 
 ---
 
-#### Phase 16: Per-Export Pricing
+#### Phase 20: Per-Export Pricing
 
-**Goal:** Add $0.50 consumable IAP as additional monetization option alongside subscriptions
-**Depends on:** Phase 15 (RevenueCat already integrated)
-**Research:** Unlikely (RevenueCat patterns established)
-**Plans:** TBD
+**Goal:** Add $0.50 consumable IAP as additional monetization option alongside subscriptions, with monthly bonus credits for Pro users
+
+**Depends on:** Phase 19 (RevenueCat already integrated)
+**Research:** Completed — see `.planning/research/`
+**Requirements:** MON-01 to MON-06, DB-01, DB-02, DB-04, STATE-01, STATE-03
+
+**Success Criteria:**
+1. User can purchase single export credit for $0.50
+2. Credit is consumed at moment of export (not purchase)
+3. Pro subscribers receive bonus credits monthly
+4. Clear price display with configure-before-pay flow
+5. Restore purchases works for both subscriptions and consumables
+
+**Key Implementation Notes:**
+- Configure consumable product in RevenueCat dashboard ($0.49/0.50)
+- Create `user_credits` table with RLS policies
+- Create `purchase_transactions` table for idempotency
+- Fix `projects.user_id` FK from SET NULL to CASCADE
+- Build `CreditsProvider` following existing `entitlement_provider.dart` pattern
+- Add realtime subscription for credit updates
+- Test consumable repurchase on Android (known platform issue)
 
 Plans:
-- [ ] 16-01: TBD (run /gsd-plan-phase 16 to break down)
+- [ ] 20-01: Database migrations (user_credits, purchase_transactions)
+- [ ] 20-02: CreditsProvider and realtime subscription
+- [ ] 20-03: RevenueCat consumable configuration
+- [ ] 20-04: Export bottom sheet with credit check/consume logic
+- [ ] 20-05: Purchase flow UI and integration
 
-#### Phase 17: Settings Screen
+---
 
-**Goal:** Display user info, subscription status, usage stats, and add delete account functionality
-**Depends on:** Phase 16
-**Research:** Unlikely (internal patterns)
-**Plans:** TBD
+#### Phase 21: Settings Enhancement
+
+**Goal:** Display user info, subscription status, usage stats, and implement full account deletion with data cleanup
+
+**Depends on:** Phase 20
+**Research:** Completed — see `.planning/research/`
+**Requirements:** SET-01 to SET-06, DB-03, STATE-02
+
+**Success Criteria:**
+1. Settings displays current user email address
+2. Settings shows subscription status (Free/Pro)
+3. Settings displays export statistics (total exports, credits remaining)
+4. "Manage Subscription" button deep-links to platform settings
+5. "Delete Account" option with confirmation flow
+6. Account deletion performs full data cleanup (projects, layers, exports, storage)
+
+**Key Implementation Notes:**
+- Create `delete_user_account` Edge Function (not RPC) for secure cascade deletion
+- Build `StatsProvider` for aggregating user statistics
+- Storage cleanup must happen BEFORE auth user deletion (not CASCADE)
+- Always call `RevenueCat.logOut()` before account deletion
+- Use `security definer` with `auth.uid()` validation
+- Test deletion end-to-end with orphaned data verification
 
 Plans:
-- [ ] 17-01: TBD (run /gsd-plan-phase 17 to break down)
+- [ ] 21-01: StatsProvider for user statistics
+- [ ] 21-02: Enhanced SettingsScreen with user info section
+- [ ] 21-03: Delete account Edge Function with cascade cleanup
+- [ ] 21-04: Account deletion UI flow with confirmation
+- [ ] 21-05: Testing and verification
 
 ---
 
@@ -169,7 +215,7 @@ Plans:
 |-------|-------------|--------|-----------|
 | 18 | Design System Foundation | **Complete** | 2026-02-05 |
 | 19 | Mobile UX & Layout | **Complete** | 2026-02-05 |
-| 20 | Screen Polish | Not Started | - |
+| 22 | Screen Polish | Not Started | - |
 
 See: [v1.4-visual-overhaul.md](milestones/v1.4-visual-overhaul.md)
 
