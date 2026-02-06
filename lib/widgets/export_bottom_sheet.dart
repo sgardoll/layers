@@ -6,8 +6,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../core/result.dart';
 import '../models/layer.dart';
+import '../providers/credits_provider.dart';
 import '../providers/entitlement_provider.dart';
 import '../services/supabase_export_service.dart';
+import 'credit_indicator.dart';
 import 'export_purchase_sheet.dart';
 
 class ExportBottomSheet extends ConsumerStatefulWidget {
@@ -59,34 +61,55 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
   }
 
   Future<void> _startExport(ExportType type) async {
-    // Check if user has Pro entitlement
+    // Check if user has Pro entitlement (Pro users don't consume credits)
     final revenueCat = ref.read(revenueCatServiceProvider);
+    final creditsNotifier = ref.read(creditsProvider.notifier);
 
     bool isPro = false;
     try {
       isPro = await revenueCat.hasProEntitlement();
     } catch (e) {
-      // RevenueCat error - log and treat as non-Pro (will show purchase option)
       debugPrint('RevenueCat entitlement check failed: $e');
     }
 
     if (!isPro) {
-      // Show purchase sheet for non-Pro users
-      if (!mounted) return;
+      // Non-Pro users need to check and consume credits
+      final hasCredits = ref.read(hasCreditsProvider);
 
-      bool purchased = false;
-      try {
-        purchased = await ExportPurchaseSheet.show(
-          context,
-          revenueCatService: revenueCat,
-        );
-      } catch (e) {
-        debugPrint('Purchase sheet error: $e');
-        _showSnackBar('Could not load purchase options');
-        return;
+      if (!hasCredits) {
+        // No credits - show purchase prompt
+        if (!mounted) return;
+
+        bool purchased = false;
+        try {
+          purchased = await ExportPurchaseSheet.show(
+            context,
+            revenueCatService: revenueCat,
+          );
+        } catch (e) {
+          debugPrint('Purchase sheet error: $e');
+          _showSnackBar('Could not load purchase options');
+          return;
+        }
+
+        if (!purchased || !mounted) return;
+
+        // Credit should be added by purchase flow, but refresh to be sure
+        await ref.read(creditsProvider.notifier).refresh();
       }
 
-      if (!purchased || !mounted) return;
+      // Consume credit for export
+      final consumed = await creditsNotifier.consumeCredit(
+        projectId: widget.projectId,
+        description: 'Export: ${widget.projectName}',
+      );
+
+      if (!consumed) {
+        if (mounted) {
+          _showSnackBar('Failed to consume credit. Please try again.');
+        }
+        return;
+      }
     }
 
     setState(() {
@@ -129,33 +152,31 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
     final exportService = ref.read(supabaseExportServiceProvider);
 
     _exportSubscription?.cancel();
-    _exportSubscription = exportService
-        .subscribeToExport(exportId)
-        .listen(
-          (export) {
-            setState(() => _currentExport = export);
+    _exportSubscription = exportService.subscribeToExport(exportId).listen(
+      (export) {
+        setState(() => _currentExport = export);
 
-            if (export.isComplete && export.assetUrl != null) {
-              setState(() => _statusMessage = 'Ready to download!');
-            } else if (export.isFailed) {
-              _showSnackBar(export.errorMessage ?? 'Export failed');
-              setState(() {
-                _isExporting = false;
-                _statusMessage = null;
-                _currentExport = null;
-              });
-            } else if (export.isProcessing) {
-              setState(() => _statusMessage = 'Building export...');
-            }
-          },
-          onError: (e) {
-            _showSnackBar('Connection error: $e');
-            setState(() {
-              _isExporting = false;
-              _statusMessage = null;
-            });
-          },
-        );
+        if (export.isComplete && export.assetUrl != null) {
+          setState(() => _statusMessage = 'Ready to download!');
+        } else if (export.isFailed) {
+          _showSnackBar(export.errorMessage ?? 'Export failed');
+          setState(() {
+            _isExporting = false;
+            _statusMessage = null;
+            _currentExport = null;
+          });
+        } else if (export.isProcessing) {
+          setState(() => _statusMessage = 'Building export...');
+        }
+      },
+      onError: (e) {
+        _showSnackBar('Connection error: $e');
+        setState(() {
+          _isExporting = false;
+          _statusMessage = null;
+        });
+      },
+    );
   }
 
   Future<void> _downloadExport() async {
@@ -201,9 +222,27 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  Future<void> _showPurchaseSheet() async {
+    final revenueCat = ref.read(revenueCatServiceProvider);
+    try {
+      final purchased = await ExportPurchaseSheet.show(
+        context,
+        revenueCatService: revenueCat,
+      );
+      if (purchased) {
+        await ref.read(creditsProvider.notifier).refresh();
+      }
+    } catch (e) {
+      debugPrint('Purchase sheet error: $e');
+      _showSnackBar('Could not load purchase options');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final hasCredits = ref.watch(hasCreditsProvider);
+    final isPro = ref.watch(entitlementProvider).isPro;
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -211,7 +250,21 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Export', style: theme.textTheme.headlineSmall),
+          Row(
+            children: [
+              Expanded(
+                child: Text('Export', style: theme.textTheme.headlineSmall),
+              ),
+              if (!isPro) ...[
+                const SizedBox(width: 12),
+                CreditIndicator(
+                  variant: CreditIndicatorVariant.compact,
+                  showPurchaseButton: !hasCredits && !_isExporting,
+                  onTap: () => _showPurchaseSheet(),
+                ),
+              ],
+            ],
+          ),
           const SizedBox(height: 24),
           if (_isExporting) ...[
             if (_currentExport?.isComplete == true) ...[
