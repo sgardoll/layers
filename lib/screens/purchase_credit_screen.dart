@@ -4,15 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../models/credit_transaction.dart';
-import '../providers/credits_provider.dart';
 import '../providers/entitlement_provider.dart';
 import '../widgets/purchase_button.dart';
 
-/// Screen for purchasing export credits.
+/// Screen for purchasing a one-time export.
 ///
-/// Shows the price, handles the purchase flow, and adds credits to the user's balance
-/// after a successful purchase. Follows the same patterns as PaywallScreen.
+/// Shows the price and handles the purchase flow.
+/// Follows the same patterns as PaywallScreen.
 class PurchaseCreditScreen extends ConsumerStatefulWidget {
   const PurchaseCreditScreen({super.key});
 
@@ -74,25 +72,8 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
     if (!mounted) return;
 
     if (result.isSuccess) {
-      // Add credits to user's balance
-      final success = await ref.read(creditsProvider.notifier).addCredits(
-            1,
-            CreditTransactionType.purchase,
-            description:
-                'Purchased: ${_exportPackage!.storeProduct.priceString}',
-          );
-
-      if (mounted) {
-        if (success) {
-          Navigator.of(context).pop(true);
-        } else {
-          setState(() {
-            _isPurchasing = false;
-            _errorMessage =
-                'Purchase succeeded but failed to add credits. Please contact support.';
-          });
-        }
-      }
+      // Purchase successful - return true to allow export
+      Navigator.of(context).pop(true);
     } else if (result.isCancelled) {
       setState(() => _isPurchasing = false);
     } else {
@@ -115,10 +96,6 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
     if (!mounted) return;
 
     if (result.isSuccess) {
-      // For consumables, we need to check if there are any pending transactions
-      // RevenueCat doesn't automatically restore consumables, so we refresh credits
-      await ref.read(creditsProvider.notifier).refresh();
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Purchases restored successfully!')),
@@ -140,7 +117,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buy Export Credit'),
+        title: const Text('Export Project'),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.close),
@@ -208,7 +185,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Export Credit',
+          'Export This Project',
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -216,7 +193,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Get 1 export credit for a one-time layer export',
+          'One-time purchase to export this project',
           style: theme.textTheme.bodyLarge?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
@@ -250,7 +227,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'per credit',
+                'one-time purchase',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -286,7 +263,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
           onPressed: _purchaseCredit,
           isLoading: _isPurchasing,
           isEnabled: !_isPurchasing,
-          label: 'Buy Credit',
+          label: 'Purchase Export',
           errorMessage: _errorMessage,
         ),
       ],

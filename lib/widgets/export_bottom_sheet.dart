@@ -6,11 +6,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../core/result.dart';
 import '../models/layer.dart';
-import '../providers/credits_provider.dart';
 import '../providers/entitlement_provider.dart';
 import '../screens/purchase_credit_screen.dart';
 import '../services/supabase_export_service.dart';
-import 'credit_indicator.dart';
 
 class ExportBottomSheet extends ConsumerStatefulWidget {
   final List<Layer> layers;
@@ -61,9 +59,8 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
   }
 
   Future<void> _startExport(ExportType type) async {
-    // Check if user has Pro entitlement (Pro users don't consume credits)
+    // Check if user has Pro entitlement
     final revenueCat = ref.read(revenueCatServiceProvider);
-    final creditsNotifier = ref.read(creditsProvider.notifier);
 
     bool isPro = false;
     try {
@@ -73,33 +70,13 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
     }
 
     if (!isPro) {
-      // Non-Pro users need to check and consume credits
-      final hasCredits = ref.read(hasCreditsProvider);
+      // Non-Pro users need to purchase export
+      if (!mounted) return;
 
-      if (!hasCredits) {
-        // No credits - show purchase screen
-        if (!mounted) return;
+      final purchased = await PurchaseCreditScreen.show(context);
 
-        final purchased = await PurchaseCreditScreen.show(context);
-
-        if (!purchased || !mounted) return;
-
-        // Credit should be added by purchase flow, but refresh to be sure
-        await ref.read(creditsProvider.notifier).refresh();
-      }
-
-      // Consume credit for export
-      final consumed = await creditsNotifier.consumeCredit(
-        projectId: widget.projectId,
-        description: 'Export: ${widget.projectName}',
-      );
-
-      if (!consumed) {
-        if (mounted) {
-          _showSnackBar('Failed to consume credit. Please try again.');
-        }
-        return;
-      }
+      if (!purchased || !mounted) return;
+      // Purchase successful - proceed with export
     }
 
     setState(() {
@@ -212,23 +189,9 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  Future<void> _showPurchaseSheet() async {
-    try {
-      final purchased = await PurchaseCreditScreen.show(context);
-      if (purchased) {
-        await ref.read(creditsProvider.notifier).refresh();
-      }
-    } catch (e) {
-      debugPrint('Purchase screen error: $e');
-      _showSnackBar('Could not load purchase options');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final hasCredits = ref.watch(hasCreditsProvider);
-    final isPro = ref.watch(entitlementProvider).isPro;
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -236,21 +199,7 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text('Export', style: theme.textTheme.headlineSmall),
-              ),
-              if (!isPro) ...[
-                const SizedBox(width: 12),
-                CreditIndicator(
-                  variant: CreditIndicatorVariant.compact,
-                  showPurchaseButton: !hasCredits && !_isExporting,
-                  onTap: () => _showPurchaseSheet(),
-                ),
-              ],
-            ],
-          ),
+          Text('Export', style: theme.textTheme.headlineSmall),
           const SizedBox(height: 24),
           if (_isExporting) ...[
             if (_currentExport?.isComplete == true) ...[
