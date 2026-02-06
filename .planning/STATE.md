@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 ## Current Position
 
 Milestone: v1.3 Monetization & Settings
-Phase: 20 of 21 — Planned
-Plan: 5 plans ready
-Status: Ready for execution
+Phase: 20 of 21 — In Progress
+Plan: 1 of 5 complete
+Status: Executing Wave 1
 
 **Phase 20: Per-Export Pricing** — 5 plans in 3 waves
-- Wave 1: Database migrations + RevenueCat config (parallel)
+- Wave 1: Database migrations ✓ + RevenueCat config (parallel)
 - Wave 2: CreditsProvider with realtime subscription
 - Wave 3: Export UI + Purchase flow (parallel)
 
-Last activity: 2026-02-07 — Completed quick task 006: Hide subscription row when logged out
+Last activity: 2026-02-07 — Completed plan 20-01: Database migrations for user_credits and purchase_transactions
 
 ## Shipped Builds
 
@@ -35,9 +35,11 @@ Last activity: 2026-02-07 — Completed quick task 006: Hide subscription row wh
 
 ## Next Steps
 
-1. Complete requirements definition for v1.3
-2. Create roadmap for Phases 16-17
-3. Begin Phase 16: Per-Export Pricing
+1. Execute plan 20-02: CreditsProvider with realtime subscription
+2. Execute plan 20-03: RevenueCat consumable configuration (parallel with 20-02)
+3. Execute plan 20-04: Export bottom sheet with credit check/consume logic
+4. Execute plan 20-05: Purchase flow UI and integration
+5. Begin Phase 21: Settings Enhancement
 
 ## Accumulated Context
 
@@ -61,7 +63,7 @@ Last activity: 2026-02-07 — Completed quick task 006: Hide subscription row wh
 - v1.4 Visual Foundation: Design system, responsive layout, mobile UX
 
 ### Open Items
-- v1.3 Monetization & Settings: Not started
+- v1.3 Monetization & Settings: Wave 1 in progress (1/2 complete)
 - BuildShip workflow processing: Spec complete, needs implementation
 - End-to-end testing needed
 
@@ -83,5 +85,5 @@ None
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Phase 20 planned, 5 plans created
-Next action: Execute Phase 20 Wave 1
+Stopped at: Completed plan 20-01: Database migrations
+Next action: Execute plan 20-02: CreditsProvider
