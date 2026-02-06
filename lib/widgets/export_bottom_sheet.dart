@@ -8,9 +8,9 @@ import '../core/result.dart';
 import '../models/layer.dart';
 import '../providers/credits_provider.dart';
 import '../providers/entitlement_provider.dart';
+import '../screens/purchase_credit_screen.dart';
 import '../services/supabase_export_service.dart';
 import 'credit_indicator.dart';
-import 'export_purchase_sheet.dart';
 
 class ExportBottomSheet extends ConsumerStatefulWidget {
   final List<Layer> layers;
@@ -77,20 +77,10 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
       final hasCredits = ref.read(hasCreditsProvider);
 
       if (!hasCredits) {
-        // No credits - show purchase prompt
+        // No credits - show purchase screen
         if (!mounted) return;
 
-        bool purchased = false;
-        try {
-          purchased = await ExportPurchaseSheet.show(
-            context,
-            revenueCatService: revenueCat,
-          );
-        } catch (e) {
-          debugPrint('Purchase sheet error: $e');
-          _showSnackBar('Could not load purchase options');
-          return;
-        }
+        final purchased = await PurchaseCreditScreen.show(context);
 
         if (!purchased || !mounted) return;
 
@@ -223,17 +213,13 @@ class _ExportBottomSheetState extends ConsumerState<ExportBottomSheet> {
   }
 
   Future<void> _showPurchaseSheet() async {
-    final revenueCat = ref.read(revenueCatServiceProvider);
     try {
-      final purchased = await ExportPurchaseSheet.show(
-        context,
-        revenueCatService: revenueCat,
-      );
+      final purchased = await PurchaseCreditScreen.show(context);
       if (purchased) {
         await ref.read(creditsProvider.notifier).refresh();
       }
     } catch (e) {
-      debugPrint('Purchase sheet error: $e');
+      debugPrint('Purchase screen error: $e');
       _showSnackBar('Could not load purchase options');
     }
   }
