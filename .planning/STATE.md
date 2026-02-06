@@ -11,15 +11,15 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 
 Milestone: v1.3 Monetization & Settings
 Phase: 20 of 21 — In Progress
-Plan: 3 of 5 complete
-Status: Executing Wave 2
+Plan: 4 of 5 complete
+Status: Executing Wave 3
 
 **Phase 20: Per-Export Pricing** — 5 plans in 3 waves
 - Wave 1: Database migrations ✓ + RevenueCat config ✓ (complete)
 - Wave 2: CreditsProvider with realtime subscription ✓ (complete)
-- Wave 3: Export UI + Purchase flow (parallel)
+- Wave 3: Export UI ✓ + Purchase flow (in progress)
 
-Last activity: 2026-02-07 — Completed plan 20-03: CreditsProvider with realtime subscription
+Last activity: 2026-02-07 — Completed plan 20-04: Export bottom sheet with credit check/consume logic
 
 ## Shipped Builds
 
@@ -35,9 +35,8 @@ Last activity: 2026-02-07 — Completed plan 20-03: CreditsProvider with realtim
 
 ## Next Steps
 
-1. Execute plan 20-04: Export bottom sheet with credit check/consume logic
-2. Execute plan 20-05: Purchase flow UI and integration
-3. Begin Phase 21: Settings Enhancement
+1. Execute plan 20-05: Purchase flow UI and integration
+2. Begin Phase 21: Settings Enhancement
 
 ## Accumulated Context
 
@@ -84,5 +83,5 @@ None
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Completed plan 20-03: CreditsProvider with realtime subscription
-Next action: Execute plan 20-04: Export bottom sheet with credit check/consume logic
+Stopped at: Completed plan 20-04: Export bottom sheet with credit check/consume logic
+Next action: Execute plan 20-05: Purchase flow UI and integration
