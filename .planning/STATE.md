@@ -11,15 +11,15 @@ See: .planning/PROJECT.md (updated 2026-02-06)
 
 Milestone: v1.3 Monetization & Settings
 Phase: 20 of 21 — In Progress
-Plan: 4 of 5 complete
-Status: Executing Wave 3
+Plan: 5 of 5 complete (awaiting checkpoint verification)
+Status: Checkpoint - Human verification required
 
 **Phase 20: Per-Export Pricing** — 5 plans in 3 waves
 - Wave 1: Database migrations ✓ + RevenueCat config ✓ (complete)
 - Wave 2: CreditsProvider with realtime subscription ✓ (complete)
-- Wave 3: Export UI ✓ + Purchase flow (in progress)
+- Wave 3: Export UI ✓ + Purchase flow ✓ (complete, needs verification)
 
-Last activity: 2026-02-07 — Completed plan 20-04: Export bottom sheet with credit check/consume logic
+Last activity: 2026-02-07 — Completed plan 20-05: Purchase flow UI and integration (awaiting checkpoint)
 
 ## Shipped Builds
 
@@ -35,8 +35,8 @@ Last activity: 2026-02-07 — Completed plan 20-04: Export bottom sheet with cre
 
 ## Next Steps
 
-1. Execute plan 20-05: Purchase flow UI and integration
-2. Begin Phase 21: Settings Enhancement
+1. **CHECKPOINT**: Verify purchase flow works correctly (Task 4 of plan 20-05)
+2. After checkpoint approval: Begin Phase 21: Settings Enhancement
 
 ## Accumulated Context
 
@@ -83,5 +83,5 @@ None
 ## Session Continuity
 
 Last session: 2026-02-07
-Stopped at: Completed plan 20-04: Export bottom sheet with credit check/consume logic
-Next action: Execute plan 20-05: Purchase flow UI and integration
+Stopped at: **CHECKPOINT** - Completed plan 20-05 auto tasks, awaiting human verification
+Next action: User to test purchase flow and approve checkpoint
