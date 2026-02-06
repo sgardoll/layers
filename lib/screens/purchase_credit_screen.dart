@@ -154,7 +154,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Header with icon
-              _buildHeader(context, colorScheme),
+              _buildHeader(context, colorScheme, theme),
               const SizedBox(height: 32),
 
               // Main content
@@ -166,9 +166,9 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
                   ),
                 )
               else if (_exportPackage != null)
-                _buildPurchaseContent(context, colorScheme)
+                _buildPurchaseContent(context, colorScheme, theme)
               else
-                _buildErrorState(context),
+                _buildErrorState(context, theme),
 
               const SizedBox(height: 24),
 
@@ -182,7 +182,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
               const SizedBox(height: 16),
 
               // Legal links
-              _buildLegalLinks(context, colorScheme),
+              _buildLegalLinks(context, colorScheme, theme),
             ],
           ),
         ),
@@ -190,7 +190,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, ColorScheme colorScheme) {
+  Widget _buildHeader(BuildContext context, ColorScheme colorScheme, ThemeData theme) {
     return Column(
       children: [
         Container(
@@ -226,7 +226,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
     );
   }
 
-  Widget _buildPurchaseContent(BuildContext context, ColorScheme colorScheme) {
+  Widget _buildPurchaseContent(BuildContext context, ColorScheme colorScheme, ThemeData theme) {
     final priceString = _exportPackage!.storeProduct.priceString;
 
     return Column(
@@ -264,16 +264,19 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
         _buildBenefitRow(
           Icons.check_circle_outline,
           'Export in any format (PNG, ZIP, .layers)',
+          theme,
         ),
         const SizedBox(height: 12),
         _buildBenefitRow(
           Icons.check_circle_outline,
           'High-resolution layer extraction',
+          theme,
         ),
         const SizedBox(height: 12),
         _buildBenefitRow(
           Icons.star_outline,
           'Or subscribe to Pro for unlimited exports',
+          theme,
         ),
         const SizedBox(height: 32),
 
@@ -290,7 +293,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
     );
   }
 
-  Widget _buildBenefitRow(IconData icon, String text) {
+  Widget _buildBenefitRow(IconData icon, String text, ThemeData theme) {
     return Row(
       children: [
         Icon(icon, size: 20, color: theme.colorScheme.primary),
@@ -305,7 +308,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
     );
   }
 
-  Widget _buildErrorState(BuildContext context) {
+  Widget _buildErrorState(BuildContext context, ThemeData theme) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -333,7 +336,7 @@ class _PurchaseCreditScreenState extends ConsumerState<PurchaseCreditScreen> {
     );
   }
 
-  Widget _buildLegalLinks(BuildContext context, ColorScheme colorScheme) {
+  Widget _buildLegalLinks(BuildContext context, ColorScheme colorScheme, ThemeData theme) {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
